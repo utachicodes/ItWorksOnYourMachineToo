@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lexworkseverywhere"
+version = "2.1.0"
+authors = [
+    {name = "Alexandre Albert Ndour", email = "alexandre.albert.ndour@example.com"},
+]
+description = "LexWorksEverywhere: Le gestionnaire d'environnement qui garantit que votre code fonctionne partout."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Build Tools",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "click>=8.0.0",
+    "psutil>=5.8.0",
+    "rich>=10.0.0",
+    "requests>=2.25.0",
+    "pyyaml>=6.0",
+    "toml>=0.10.0",
+]
+
+[project.scripts]
+lexworks = "lexworkseverywhere.cli.main:main"
+lex = "lexworkseverywhere.cli.main:main"
+
+[project.urls]
+Homepage = "https://github.com/alexandrealbertndour/lexworkseverywhere"
+Repository = "https://github.com/alexandrealbertndour/lexworkseverywhere"
+"Bug Reports" = "https://github.com/alexandrealbertndour/lexworkseverywhere/issues"
+"Source" = "https://github.com/alexandrealbertndour/lexworkseverywhere"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lexworkseverywhere*"]
+
+[tool.setuptools.package-data]
+lexworkseverywhere = ["**/*.json", "**/*.yaml", "**/*.yml", "**/*.txt", "**/*.md"]
