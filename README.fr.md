@@ -24,6 +24,7 @@
 | `lexworks doctor` | Vérifie la santé du système ou du projet |
 | `lexworks capture` | Sauvegarde la configuration système |
 | `lexworks export --kind devcontainer` | Génère un devcontainer |
+| `lexworks export --kind brewfile|winget|apt|nix` | Génère des fichiers d’installation |
 | `--lang fr|en` | Langue de sortie de la CLI |
 
 ## Installation
@@ -37,7 +38,12 @@ pip install lexworkseverywhere
 ```bash
 lexworks scan /path/to/project
 lexworks doctor --project-path /path/to/project
+lexworks doctor --apply --project-path /path/to/project
 lexworks export --kind devcontainer -p /path/to/project
+lexworks export --kind brewfile -p /path/to/project
+lexworks export --kind winget -p /path/to/project
+lexworks export --kind apt -p /path/to/project
+lexworks export --kind nix -p /path/to/project
 lexworks run -p /path/to/project
 ```
 

@@ -24,6 +24,7 @@ LexWorksEverywhere lets you run any software project on any OS without manual se
 | `lexworks doctor [-p PATH]` | Check host and optional project requirements |
 | `lexworks capture` | Save the current system profile |
 | `lexworks export --kind devcontainer -p PATH` | Generate a Dev Container |
+| `lexworks export --kind brewfile|winget|apt|nix -p PATH` | Generate OS setup files |
 | `--lang en|fr` | Switch CLI language (default: en) |
 
 ## Install
@@ -46,7 +47,12 @@ pip install .
 ```bash
 lexworks scan -p /path/to/project
 lexworks doctor -p /path/to/project
+lexworks doctor --apply -p /path/to/project
 lexworks export --kind devcontainer -p /path/to/project
+lexworks export --kind brewfile -p /path/to/project
+lexworks export --kind winget -p /path/to/project
+lexworks export --kind apt -p /path/to/project
+lexworks export --kind nix -p /path/to/project
 lexworks run -p /path/to/project
 ```
 
