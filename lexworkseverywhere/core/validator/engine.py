@@ -29,12 +29,42 @@ class EnvironmentValidator:
                 ),
             },
             {
+                "pattern": r"npm: command not found|yarn: command not found|pnpm: command not found|node: command not found",
+                "category": "missing_runtime",
+                "recommendation": "📦 Node.js tooling missing. Install Node.js (corepack enables yarn/pnpm).",
+            },
+            {
+                "pattern": r"cargo: command not found|rustc: command not found",
+                "category": "missing_runtime",
+                "recommendation": "🦀 Rust toolchain missing. Install rustup/cargo.",
+            },
+            {
+                "pattern": r"go: command not found",
+                "category": "missing_runtime",
+                "recommendation": "🐹 Go toolchain missing. Install Go.",
+            },
+            {
+                "pattern": r"mvn: command not found|gradle: command not found",
+                "category": "missing_runtime",
+                "recommendation": "☕ Java build tool missing. Install Maven/Gradle.",
+            },
+            {
                 "pattern": r"No module named '(.+)'|ModuleNotFoundError",
                 "category": "missing_python_package",
                 "recommendation": (
                     "🐍 Python package missing. Ensure requirements.txt is up to date and run "
                     "'pip install -r requirements.txt'."
                 ),
+            },
+            {
+                "pattern": r"Cannot find module '(.+)'|ERR_MODULE_NOT_FOUND|Error: Cannot find package '(.+)'",
+                "category": "missing_node_package",
+                "recommendation": "📦 JavaScript package missing. Run your package manager install.",
+            },
+            {
+                "pattern": r"TS2307: Cannot find module '(.+)'",
+                "category": "missing_ts_package",
+                "recommendation": "📦 TypeScript types or package missing. Install corresponding @types or package.",
             },
             {
                 "pattern": r"Permission denied|EACCES",
@@ -68,4 +98,7 @@ class EnvironmentValidator:
             match = re.search(r"module named '(.+)'", issue.get("context", ""))
             pkg_name = match.group(1) if match else "module_name"
             return ["pip", "install", pkg_name]
+        if issue["category"] in ("missing_node_package", "missing_ts_package"):
+            # Par défaut, tenter une installation des dépendances
+            return ["npm", "install"]
         return None
