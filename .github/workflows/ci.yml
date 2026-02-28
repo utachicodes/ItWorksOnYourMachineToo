@@ -1,0 +1,61 @@
+name: ZeroEnv CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+      - name: Install Linting Tools
+        run: |
+          pip install flake8 bandit safety
+      - name: Lint with flake8
+        run: flake8 zeroenv/core
+      - name: Security check with bandit
+        run: bandit -r zeroenv/core
+      - name: Dependency safety check
+        run: safety check
+
+  test-core:
+    needs: lint-and-security
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install pytest pytest-cov
+      - name: Run Core Unit Tests
+        run: |
+          python -m pytest tests/core -v --cov=zeroenv/core
+
+  integration-and-cross-os:
+    needs: test-core
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+      - name: Run Cross-OS Validation
+        run: |
+          pip install -e .
+          python scripts/validate_cross_os.py

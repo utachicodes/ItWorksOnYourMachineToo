@@ -1,42 +1,39 @@
-# LexWorksEverywhere - Gestionnaire d'Environnement de Développement Multiplateforme
+# LexWorksEverywhere — Universal Development Environment Manager
 
-**LexWorksEverywhere** est un outil open-source révolutionnaire qui permet d'exécuter n'importe quel projet logiciel sur n'importe quel système d'exploitation sans configuration manuelle. Il résout définitivement le problème fameux "ça marche sur ma machine" en gérant automatiquement les différences d'environnement entre les systèmes.
+LexWorksEverywhere lets you run any software project on any OS without manual setup. It eliminates “works on my machine” by automatically handling OS differences.
 
-## 🚀 Fonctionnalités
+## Features
 
-- **Multiplateforme** : Fonctionne sur Windows, macOS et Linux
-- **Zéro configuration** : Aucune configuration manuelle requise
-- **Détection automatique** : Détecte automatiquement le type de projet et ses dépendances
-- **Architecture Core PUR** : Coeur 100% agnostique au système pour une fiabilité maximale
-- **Sécurité Hardened** : Sandboxing granulaire et vérification d'intégrité SHA256 des runtimes
-- **Adaptation intelligente** : Convertit automatiquement les chemins et scripts entre systèmes
-- **Chaos-Tested** : Résilience prouvée contre les pannes système (disque plein, timeout, etc.)
-- **Performance X10** : Cache intelligent pour des scans quasi-instantanés
-- **Support Universel** : Détecte et gère plus de 15 langages (Python, Go, Rust, C++, etc.)
-- **Moteur Heuristique** : Supporte n'importe quel projet via Makefile ou CMake
-- **LexWorksEverywhere Doctor** : Auto-diagnostic intégré pour vérifier la santé du système
-- **Pipeline CI/CD Robuste** : Validation multi-OS et multi-architecture automatique
+- Cross‑platform: Windows, macOS, Linux
+- Zero configuration
+- Automatic project detection and dependency mapping
+- System‑agnostic Core PUR architecture
+- Safety: sandboxing and integrity hooks
+- Smart path/script adaptation
+- Resilience under adverse conditions
+- Caching for fast scans
+- Broad language support (Python, Node.js, Go, Rust, C/C++, etc.)
+- Heuristic support for Make/CMake
+- Built‑in Doctor for host/project checks
 
-### ️ Commandes
-| Commande | Description |
+## CLI
+| Command | Description |
 | :--- | :--- |
-| `lexworks scan` | Analyse le projet et génère un plan universel |
-| `lexworks run` | Prépare et exécute le projet en isolation |
-| `lexworks doctor` | Vérifie les prérequis et la santé du host |
-| `lexworks capture` | Sauvegarde la configuration système actuelle |
+| `lexworks scan -p PATH` | Analyze project and generate an execution plan |
+| `lexworks run -p PATH` | Prepare environment and execute the project |
+| `lexworks doctor [-p PATH]` | Check host and optional project requirements |
+| `lexworks capture` | Save the current system profile |
+| `lexworks export --kind devcontainer -p PATH` | Generate a Dev Container |
+| `--lang en|fr` | Switch CLI language (default: en) |
 
-## 🛠️ Installation
+## Install
 
-### Prérequis
-- Python 3.9 ou supérieur
-- Système compatible pip
-
-### Installation depuis PyPI
 ```bash
 pip install lexworkseverywhere
 ```
 
-### Installation depuis les sources
+From source:
+
 ```bash
 git clone https://github.com/alexandrealbertndour/lexworkseverywhere.git
 cd lexworkseverywhere
@@ -44,72 +41,42 @@ pip install -r requirements.txt
 pip install .
 ```
 
-## 💡 Utilisation
+## Usage
 
-### Analyser un projet
 ```bash
-lexworks scan /path/to/your/project
+lexworks scan -p /path/to/project
+lexworks doctor -p /path/to/project
+lexworks export --kind devcontainer -p /path/to/project
+lexworks run -p /path/to/project
 ```
 
-### Exécuter un projet
+## Architecture (v2 Core PUR)
+
+1. Core PUR: Project Planner, Execution Engine, Environment Validator  
+2. OS Adapters: macOS, Windows, Linux  
+3. Security Layer  
+4. Multi‑OS CI/CD
+
+## Tests
+
 ```bash
-lexworks run /path/to/your/project
+python -m pytest -q
 ```
 
-### Diagnostiquer les problèmes
-```bash
-lexworks doctor
-```
+## Contributing
 
-### Capturer l'environnement
-```bash
-lexworks capture
-```
+Issues and pull requests are welcome.
 
-## 🏗️ Architecture (v2 Core PUR)
+## License
 
-LexWorksEverywhere repose sur une architecture découplée "Core PUR" garantissant une portabilité totale :
+MIT — see [LICENSE](LICENSE).
 
-1. **Core PUR (Agnostique)** :
-   - **Project Planner** : Analyse et génère un plan d'exécution universel.
-   - **Execution Engine** : Orchestre l'environnement sans dépendance système directe.
-   - **Environment Validator** : Diagnostique les échecs via des contrats d'interface.
-2. **Adapters OS (Spécifiques)** : Implémentent le contrat `OSAdapter` pour MacOS, Windows et Linux.
-3. **Security Layer** : Vérification d'intégrité (SHA256) et Sandboxing par politique.
-4. **CI/CD Automatisé** : Validation systématique sur les trois OS majeurs.
+## Author
 
-## 🧪 Tests
+Alexandre Albert Ndour
 
-Pour exécuter les tests :
-```bash
-python -m pytest lexworkseverywhere/tests/
-```
+## Support
 
-## 🤝 Contribution
+If you like this project, give it a ⭐ on GitHub.
 
-Les contributions sont les bienvenues ! Voici comment vous pouvez contribuer :
-
-1. Fork du projet
-2. Création d'une branche pour la fonctionnalité (`git checkout -b feature/FonctionnaliteIncroyable`)
-3. Commit de vos changements (`git commit -m 'Ajouter une fonctionnalité incroyable'`)
-4. Push vers la branche (`git push origin feature/FonctionnaliteIncroyable`)
-5. Ouvrir une Pull Request
-
-## 📄 Licence
-
-Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
-
-## 👤 Auteur
-
-**Alexandre Albert Ndour**
-- Date de naissance : 29 janvier 2005
-- Nationalité : Sénégalaise
-- Passionné de développement Python
-
-## 🐛 Signaler un Bug
-
-Si vous trouvez un bug, veuillez ouvrir une [issue](https://github.com/alexandrealbertndour/lexworkseverywhere/issues) sur GitHub.
-
-## 🌟 Support
-
-Si vous aimez ce projet, n'oubliez pas de lui donner une ⭐ sur GitHub !
+French version: see [README.fr.md](README.fr.md).

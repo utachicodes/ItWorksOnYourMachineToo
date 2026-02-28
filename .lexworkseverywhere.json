@@ -1,0 +1,10 @@
+{
+  "os": "macos",
+  "env_vars": {
+    "PATH": "/usr/bin"
+  },
+  "runtimes": {
+    "python": "3.12"
+  },
+  "portable_hash": "sha256:..."
+}
