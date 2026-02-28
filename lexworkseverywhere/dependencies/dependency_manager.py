@@ -14,19 +14,22 @@ Date de naissance : 29 janvier 2005
 Nationalité : Sénégalaise
 """
 
-import os
 import sys
-import subprocess
-import tempfile
-import shutil
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
+from typing import List, Optional, Tuple
 import venv
-import site
 import json
-import hashlib
-from ..core.utils.logging_utils import get_logger, log_operation, log_error, start_timer, stop_timer
-from ..core.utils.security_utils import execute_secure_command, validate_and_sanitize_path
+from ..core.utils.logging_utils import (
+    get_logger,
+    log_operation,
+    log_error,
+    start_timer,
+    stop_timer,
+)
+from ..core.utils.security_utils import (
+    execute_secure_command,
+    validate_and_sanitize_path,
+)
 
 
 class DependencyManager:
@@ -69,8 +72,11 @@ class DependencyManager:
             pip_path = self.get_pip_path()
             if pip_path:
                 # Mettre à jour pip
-                result = execute_secure_command([pip_path, "install", "--upgrade", "pip"], 
-                                              cwd=self.project_path, timeout=300)
+                result = execute_secure_command(
+                    [pip_path, "install", "--upgrade", "pip"],
+                    cwd=self.project_path,
+                    timeout=300,
+                )
                 if result.returncode != 0:
                     self.logger.error(f"Échec de la mise à jour de pip: {result.stderr}")
                     return False
@@ -134,7 +140,9 @@ class DependencyManager:
         start_timer("resolve_conflicts")
         
         try:
-            self.logger.info(f"Résolution des conflits pour {len(dependencies)} dépendances")
+            self.logger.info(
+                f"Résolution des conflits pour {len(dependencies)} dépendances"
+            )
             
             # Pour l'instant, une implémentation simple - dans une version complète,
             # on utiliserait des outils comme pip-tools ou poetry pour résoudre les conflits
@@ -145,7 +153,14 @@ class DependencyManager:
             dep_dict = {}
             for dep in dependencies:
                 # Extraire le nom de la dépendance (simplifié)
-                dep_name = dep.split("==")[0].split(">=")[0].split("<=")[0].split(">")[0].split("<")[0].split("!=")[0]
+                dep_name = (
+                    dep.split("==")[0]
+                    .split(">=")[0]
+                    .split("<=")[0]
+                    .split(">")[0]
+                    .split("<")[0]
+                    .split("!=")[0]
+                )
                 dep_name = dep_name.split("[")[0]  # Gérer les extras comme package[extra]
                 
                 if dep_name in dep_dict:
@@ -209,7 +224,9 @@ class DependencyManager:
                 
                 # Utiliser l'environnement virtuel si disponible
                 cmd = [pip_path, "install"] + resolved_deps
-                result = execute_secure_command(cmd, cwd=self.project_path, timeout=600)
+                result = execute_secure_command(
+                    cmd, cwd=self.project_path, timeout=600
+                )
                 
                 if result.returncode != 0:
                     self.logger.error(f"Échec de l'installation des dépendances Python: {result.stderr}")
@@ -218,7 +235,9 @@ class DependencyManager:
             elif project_type == "nodejs":
                 # Pour Node.js, utiliser npm dans le répertoire du projet
                 cmd = ["npm", "install"] + resolved_deps
-                result = execute_secure_command(cmd, cwd=self.project_path, timeout=600)
+                result = execute_secure_command(
+                    cmd, cwd=self.project_path, timeout=600
+                )
                 
                 if result.returncode != 0:
                     self.logger.error(f"Échec de l'installation des dépendances Node.js: {result.stderr}")
@@ -264,7 +283,7 @@ class DependencyManager:
                 "timestamp": str(Path(self.project_path).stat().st_mtime)
             }
             
-            with open(self.deps_cache_path, 'w') as f:
+            with open(self.deps_cache_path, "w") as f:
                 json.dump(cache_data, f, indent=2)
         except Exception as e:
             self.logger.error(f"Erreur lors de la sauvegarde du cache de dépendances: {e}")
@@ -283,16 +302,30 @@ class DependencyManager:
             # Pour Python, vérifier avec pip list
             pip_path = self.get_pip_path()
             if pip_path and dependencies:
-                result = execute_secure_command([pip_path, "list", "--format", "json"], 
-                                              cwd=self.project_path, timeout=30)
+                result = execute_secure_command(
+                    [pip_path, "list", "--format", "json"],
+                    cwd=self.project_path,
+                    timeout=30,
+                )
                 
                 if result.returncode == 0:
                     try:
                         installed_packages = json.loads(result.stdout)
                         installed_names = {pkg["name"].lower() for pkg in installed_packages}
                         
-                        required_names = {dep.split("==")[0].split(">=")[0].split("<=")[0].split(">")[0].split("<")[0].split("!=")[0].split("[")[0].lower() 
-                                         for dep in dependencies}
+                        required_names = {
+                            (
+                                dep.split("==")[0]
+                                .split(">=")[0]
+                                .split("<=")[0]
+                                .split(">")[0]
+                                .split("<")[0]
+                                .split("!=")[0]
+                                .split("[")[0]
+                                .lower()
+                            )
+                            for dep in dependencies
+                        }
                         
                         return required_names.issubset(installed_names)
                     except json.JSONDecodeError:
