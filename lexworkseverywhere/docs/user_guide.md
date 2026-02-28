@@ -82,13 +82,13 @@ Optional flags:
 
 ### `lexworks doctor`
 
-Vérifie les prérequis et la santé du host :
+Check system prerequisites and overall host health:
 
 ```bash
 lexworks doctor
 ```
 
-Ce command analyse le système pour s'assurer qu'il est prêt à utiliser LexWorksEverywhere.
+This command analyzes your system to ensure it is ready to use LexWorksEverywhere.
 
 ## Cross-Platform Features
 
@@ -147,9 +147,9 @@ You can include `.lexworkseverywhere.json` files in your project repository to e
 For additional help, use the `--help` flag with any LexWorksEverywhere command:
 
 ```bash
-lexworkseverywhere --help
-lexworkseverywhere run --help
-lexworkseverywhere diagnose --help
+lexworks --help
+lexworks run --help
+lexworks doctor --help
 ```
 
 ## Best Practices
