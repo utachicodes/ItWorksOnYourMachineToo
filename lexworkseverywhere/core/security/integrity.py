@@ -10,6 +10,7 @@ Projet développé par : Alexandre Albert Ndour
 """
 
 from typing import Dict
+import os
 from ..contracts.adapter import OSAdapter
 
 # Base de données simplifiée pour l'exemple (en production, chargée via un service sécurisé)
@@ -42,8 +43,9 @@ class IntegrityManager:
         if lookup_key in target_hashes:
             return current_hash == target_hashes[lookup_key]
 
-        # Si inconnu, on peut choisir d'autoriser avec un warning ou bloquer
-        return True  # Pour l'instant, on laisse passer les inconnus
+        # Si inconnu, on peut choisir d'autoriser avec un warning ou bloquer selon mode strict
+        strict = os.getenv("LEXWORKS_STRICT_INTEGRITY", "").lower() in ("1", "true", "yes", "strict")
+        return not strict
 
     def verify_project_tools(self, project_plan: Dict) -> bool:
         """Vérifie tous les outils prévus dans le plan."""
