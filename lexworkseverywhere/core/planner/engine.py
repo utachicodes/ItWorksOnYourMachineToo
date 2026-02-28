@@ -110,29 +110,87 @@ class ProjectPlanner:
         return plan
 
     def _detect_project_type(self, project_path: str) -> str:
-        """Détecte le type de projet via l'interface FS."""
-        # On vérifie à la racine et dans src/
-        check_dirs = ["", "src"]
+        """Détecte le type de projet via l'interface FS (récursif limité + pondération)."""
+        check_dirs = ["", "src", "app", "backend", "frontend", "server", "packages", "services"]
+        ignore_dirs = {".git", "node_modules", "dist", "build", "target", "venv", ".venv", "__pycache__"}
 
+        manifest_names = {
+            "package.json",
+            "pyproject.toml",
+            "requirements.txt",
+            "go.mod",
+            "Cargo.toml",
+            "composer.json",
+            "Gemfile",
+            "pom.xml",
+            "build.gradle",
+        }
+        lock_names = {
+            "yarn.lock",
+            "pnpm-lock.yaml",
+            "bun.lock",
+            "bun.lockb",
+            "Cargo.lock",
+            "go.sum",
+            "composer.lock",
+        }
+
+        def score_indicator(name: str) -> int:
+            if name in manifest_names:
+                return 3
+            if name in lock_names:
+                return 2
+            if name.startswith("."):
+                return 1
+            return 1
+
+        def has_indicator(path: str, indicator: str, depth: int) -> int:
+            try:
+                entries = self.adapter.fs.list_dir(path)
+            except Exception:
+                return 0
+            # File check in current directory
+            if indicator.startswith("."):
+                if any(e.endswith(indicator) for e in entries):
+                    return score_indicator(indicator)
+            else:
+                if indicator in entries:
+                    return score_indicator(indicator)
+            # Recurse limited depth
+            if depth <= 0:
+                return 0
+            s = 0
+            for e in entries:
+                sub = f"{path}/{e}"
+                try:
+                    if e in ignore_dirs:
+                        continue
+                    if self.adapter.fs.is_dir(sub):
+                        s = max(s, has_indicator(sub, indicator, depth - 1))
+                        if s >= 3:
+                            return s
+                except Exception:
+                    continue
+            return s
+
+        best_type = "unknown"
+        best_score = 0
         for p_type, indicators in self.project_types.items():
+            type_score = 0
             for d in check_dirs:
                 test_dir = f"{project_path}/{d}".rstrip("/")
                 if not self.adapter.fs.exists(test_dir) or not self.adapter.fs.is_dir(test_dir):
                     continue
-
-                files = self.adapter.fs.list_dir(test_dir)
                 for indicator in indicators:
-                    if indicator.startswith("."):
-                        # Recherche d'extension
-                        if any(f.endswith(indicator) for f in files):
-                            return p_type
-                    else:
-                        # Fichier exact
-                        # Filename check (clean names from path if necessary)
-                        filenames = [f.split("/")[-1].split("\\")[-1] for f in files]
-                        if indicator in filenames:
-                            return p_type
-        return "unknown"
+                    type_score = max(type_score, has_indicator(test_dir, indicator, depth=2))
+                    if type_score >= 3:
+                        break
+                if type_score >= 3:
+                    break
+            if type_score > best_score:
+                best_score = type_score
+                best_type = p_type
+        return best_type
 
     def _apply_heuristics(self, project_path: str) -> str:
         """Applique des heuristiques pour deviner le type de projet si inconnu."""
