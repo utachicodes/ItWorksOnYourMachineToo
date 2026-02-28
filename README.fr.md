@@ -1,4 +1,5 @@
 # LexWorksEverywhere - Gestionnaire d'Environnement de Développement Multiplateforme
+[![CI](https://github.com/thesenegalesehitch/LexWorksEverywhere/actions/workflows/ci.yml/badge.svg)](https://github.com/thesenegalesehitch/LexWorksEverywhere/actions/workflows/ci.yml)
 
 **LexWorksEverywhere** est un outil open-source qui permet d'exécuter n'importe quel projet logiciel sur n'importe quel système d'exploitation sans configuration manuelle. Il résout le problème "ça marche sur ma machine" en gérant automatiquement les différences d'environnement entre les systèmes.
 
