@@ -2,6 +2,7 @@
 import hashlib
 import os
 
+
 class LicenseManager:
     """
     Gère la vérification de l'intégrité de la licence et de la paternité.
@@ -33,4 +34,9 @@ class LicenseManager:
         # Drapeau du Sénégal : Vert, Jaune avec étoile Verte, Rouge
         flag = "[bold green]█[/bold green][on yellow][bold green]★[/bold green][/on yellow][bold red]█[/bold red]"
         status = "✅ Authentique" if LicenseManager.verify_license() else "⚠️ License Modifiée"
-        return f"{flag} [bold blue]LexWorksEverywhere v2.1.0[/bold blue] | [bold white]Created by {LicenseManager.AUTHOR}[/bold white] | [italic]{status}[/italic]"
+        return (
+            f"{flag} "
+            "[bold blue]LexWorksEverywhere v2.1.0[/bold blue] | "
+            f"[bold white]Created by {LicenseManager.AUTHOR}[/bold white] | "
+            f"[italic]{status}[/italic]"
+        )

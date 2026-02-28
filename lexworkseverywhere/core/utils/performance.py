@@ -2,9 +2,10 @@
 import time
 import functools
 import logging
-from typing import Any, Callable
+from typing import Callable
 
 logger = logging.getLogger("lexworkseverywhere.perf")
+
 
 def monitor_performance(name: str):
     """Décorateur pour mesurer le temps d'exécution d'une fonction."""
@@ -19,6 +20,7 @@ def monitor_performance(name: str):
             return result
         return wrapper
     return decorator
+
 
 def measure_memory_peak(name: str):
     """Décorateur pour mesurer le pic de mémoire (très basique via psutil)."""

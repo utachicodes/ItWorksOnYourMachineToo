@@ -3,27 +3,50 @@ import os
 import subprocess
 from pathlib import Path
 from typing import List, Dict, Any, Optional
-from ...core.contracts.adapter import OSAdapter, FileSystemInterface, ProcessRunnerInterface, SandboxInterface, IntegrityInterface
+from ...core.contracts.adapter import (
+    OSAdapter,
+    FileSystemInterface,
+    ProcessRunnerInterface,
+    SandboxInterface,
+    IntegrityInterface,
+)
+
 
 class LinuxFileSystem(FileSystemInterface):
     def exists(self, path: str) -> bool:
         return os.path.exists(path)
+
     def is_dir(self, path: str) -> bool:
         return os.path.isdir(path)
+
     def mkdir(self, path: str, parents: bool = True, exist_ok: bool = True) -> None:
         Path(path).mkdir(parents=parents, exist_ok=exist_ok)
+
     def read_text(self, path: str) -> str:
-        with open(path, 'r') as f: return f.read()
+        with open(path, "r") as f:
+            return f.read()
+
     def write_text(self, path: str, content: str) -> None:
-        with open(path, 'w') as f: f.write(content)
+        with open(path, "w") as f:
+            f.write(content)
+
     def list_dir(self, path: str) -> List[str]:
         return os.listdir(path)
+
     def resolve_path(self, path: str) -> str:
         return str(Path(path).resolve())
 
+
 class LinuxProcessRunner(ProcessRunnerInterface):
-    def run(self, cmd: List[str], cwd: Optional[str] = None, env: Optional[Dict[str, str]] = None, 
-            timeout: int = 300, capture_output: bool = True, policy: Optional[str] = "default") -> subprocess.CompletedProcess:
+    def run(
+        self,
+        cmd: List[str],
+        cwd: Optional[str] = None,
+        env: Optional[Dict[str, str]] = None,
+        timeout: int = 300,
+        capture_output: bool = True,
+        policy: Optional[str] = "default",
+    ) -> subprocess.CompletedProcess:
         return subprocess.run(cmd, cwd=cwd, env=env, timeout=timeout, capture_output=capture_output, text=True)
 
     def has_binary(self, name: str) -> bool:
@@ -31,8 +54,9 @@ class LinuxProcessRunner(ProcessRunnerInterface):
         import subprocess
         try:
             return subprocess.run(["which", name], capture_output=True).returncode == 0
-        except:
+        except Exception:
             return False
+
 
 class LinuxIntegrity(IntegrityInterface):
     def get_binary_hash(self, binary_path: str) -> str:
@@ -50,12 +74,15 @@ class LinuxIntegrity(IntegrityInterface):
         # Placeholder pour GPG ou l'intégrité debian
         return True
 
+
 class LinuxSandbox(SandboxInterface):
     def enter(self, policy: str, context: Dict[str, Any]) -> bool:
         # Linux-specific sandboxing logic (unshare/cgroups)
         return True
+
     def exit(self) -> bool:
         return True
+
 
 class LinuxAdapter(OSAdapter):
     def __init__(self):
@@ -63,18 +90,29 @@ class LinuxAdapter(OSAdapter):
         self._process = LinuxProcessRunner()
         self._sandbox = LinuxSandbox()
         self._integrity = LinuxIntegrity()
-    
+
     @property
-    def fs(self) -> FileSystemInterface: return self._fs
+    def fs(self) -> FileSystemInterface:
+        return self._fs
+
     @property
-    def process(self) -> ProcessRunnerInterface: return self._process
+    def process(self) -> ProcessRunnerInterface:
+        return self._process
+
     @property
-    def sandbox(self) -> SandboxInterface: return self._sandbox
+    def sandbox(self) -> SandboxInterface:
+        return self._sandbox
+
     @property
-    def integrity(self) -> IntegrityInterface: return self._integrity
-    
-    def get_os_name(self) -> str: return "linux"
-    def normalize_path(self, path: str) -> str: return str(Path(path).as_posix())
+    def integrity(self) -> IntegrityInterface:
+        return self._integrity
+
+    def get_os_name(self) -> str:
+        return "linux"
+
+    def normalize_path(self, path: str) -> str:
+        return str(Path(path).as_posix())
+
     def get_install_suggestion(self, binary_name: str) -> str:
         mapping = {
             "npm": "sudo apt install nodejs npm",

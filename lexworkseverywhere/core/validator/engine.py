@@ -25,18 +25,26 @@ class EnvironmentValidator:
             {
                 "pattern": r"command '(.+)' not found|(.+): command not found|not recognized",
                 "category": "missing_runtime",
-                "recommendation": "📦 Install the missing runtime. Tip: Use 'lexworks install-runtime <name>' if available or check https://docs.lexworkseverywhere.io/runtimes"
+                "recommendation": (
+                    "📦 Install the missing runtime. Tip: Use 'lexworks install-runtime <name>' "
+                    "or check the docs."
+                ),
             },
             {
                 "pattern": r"No module named '(.+)'|ModuleNotFoundError",
                 "category": "missing_python_package",
-                "recommendation": "🐍 Python package missing. Tip: Ensure your requirements.txt is up to date and run 'pip install -r requirements.txt'"
+                "recommendation": (
+                    "🐍 Python package missing. Ensure requirements.txt is up to date and run "
+                    "'pip install -r requirements.txt'."
+                ),
             },
             {
                 "pattern": r"Permission denied|EACCES",
                 "category": "permission_error",
-                "recommendation": "🔐 Permission denied. Tip: Check folder permissions or run with elevated privileges if safe. See https://docs.lexworkseverywhere.io/security"
-            }
+                "recommendation": (
+                    "🔐 Permission denied. Check folder permissions or run with elevated privileges if safe."
+                ),
+            },
         ]
 
     def validate_failure(self, stderr: str) -> Dict[str, Any]:

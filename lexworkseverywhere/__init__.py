@@ -8,7 +8,7 @@ Date de naissance : 29 janvier 2005
 Nationalité : Sénégalaise
 Passion : Langage informatique Python
 
-Ce projet est conçu pour permettre l'exécution de projets logiciels 
+ Ce projet est conçu pour permettre l'exécution de projets logiciels
 sur n'importe quel système d'exploitation sans configuration manuelle.
 
 Propriété intellectuelle d'Alexandre Albert Ndour - Tous droits réservés

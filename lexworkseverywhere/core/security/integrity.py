@@ -9,19 +9,19 @@ et permet de vérifier si un binaire a été altéré.
 Projet développé par : Alexandre Albert Ndour
 """
 
-from typing import Dict, List
-import hashlib
+from typing import Dict
 from ..contracts.adapter import OSAdapter
 
 # Base de données simplifiée pour l'exemple (en production, chargée via un service sécurisé)
 KNOWN_GOOD_HASHES = {
     "macos": {
-        "python3.12": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", # Placeholder
+        "python3.12": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",  # Placeholder
     },
     "linux": {
-        "python3.12": "4472a1188352697a2298c9035e98544d6da2f854964648710f6f0590a9041280", # Placeholder
-    }
+        "python3.12": "4472a1188352697a2298c9035e98544d6da2f854964648710f6f0590a9041280",  # Placeholder
+    },
 }
+
 
 class IntegrityManager:
     """
@@ -43,7 +43,7 @@ class IntegrityManager:
             return current_hash == target_hashes[lookup_key]
             
         # Si inconnu, on peut choisir d'autoriser avec un warning ou bloquer
-        return True # Pour l'instant, on laisse passer les inconnus
+        return True  # Pour l'instant, on laisse passer les inconnus
 
     def verify_project_tools(self, project_plan: Dict) -> bool:
         """Vérifie tous les outils prévus dans le plan."""

@@ -30,7 +30,12 @@ class EnvironmentProfiler:
         env_vars = self._get_safe_env_vars()
         runtimes = self._detect_runtimes()
         os_name = self.adapter.get_os_name()
-        return {"os": os_name, "env_vars": env_vars, "runtimes": runtimes, "portable_hash": self._generate_portable_hash(os_name, env_vars, runtimes)}
+        return {
+            "os": os_name,
+            "env_vars": env_vars,
+            "runtimes": runtimes,
+            "portable_hash": self._generate_portable_hash(os_name, env_vars, runtimes),
+        }
 
     def _get_safe_env_vars(self) -> Dict[str, str]:
         filtered = {}
@@ -75,5 +80,10 @@ class EnvironmentProfiler:
         return result
 
     def _generate_portable_hash(self, os_name: str, env: Dict[str, str], rt: Dict[str, str]) -> str:
-        data = os_name + "|" + env.get("PATH", "") + "|" + "|".join(f"{k}:{v}" for k, v in sorted(rt.items()))
+        parts = [
+            os_name,
+            env.get("PATH", ""),
+            "|".join(f"{k}:{v}" for k, v in sorted(rt.items())),
+        ]
+        data = "|".join(parts)
         return "sha256:" + hashlib.sha256(data.encode()).hexdigest()

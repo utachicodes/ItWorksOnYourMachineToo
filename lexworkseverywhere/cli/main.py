@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 import click
 import json
-import os
 from pathlib import Path
-from typing import List
+ 
 
 from ..core.contracts.factory import AdapterFactory
 from ..core.planner.engine import ProjectPlanner
 from ..core.engine.engine import ExecutionEngine
-from ..core.validator.engine import EnvironmentValidator
 from .doctor import run_doctor
 from rich.console import Console
 from rich.panel import Panel
@@ -16,6 +14,7 @@ from ..core.security.license import LicenseManager
 from ..core.profiler import EnvironmentProfiler
 from ..core.i18n import set_locale, t
 
+ 
 @click.group()
 @click.version_option(version="2.1.0")
 @click.option('--lang', type=click.Choice(['en', 'fr']), default='en', help='Language for CLI output')
@@ -26,6 +25,7 @@ def main(lang: str):
     branding = LicenseManager.get_branding_header()
     console.print(Panel(branding, border_style="blue"))
 
+ 
 @main.command()
 @click.option('--project-path', '-p', type=click.Path(exists=True), default='.')
 def scan(project_path: str):
@@ -38,6 +38,7 @@ def scan(project_path: str):
     except Exception as e:
         click.echo(f"{t('fatal_error')}: {e}", err=True)
 
+ 
 @main.command()
 @click.option('--project-path', '-p', type=click.Path(exists=True), default='.')
 def run(project_path: str):
@@ -68,6 +69,7 @@ def run(project_path: str):
     except Exception as e:
         click.echo(f"{t('fatal_error')}: {e}", err=True)
 
+ 
 @main.command()
 @click.option('--project-path', '-p', type=click.Path(exists=True), required=False)
 @click.option('--apply', is_flag=True, default=False, help='Apply safe local fixes when possible')
@@ -75,6 +77,7 @@ def doctor(project_path: str = None, apply: bool = False):
     """Verify host and optionally project compatibility with LexWorksEverywhere."""
     run_doctor(project_path=project_path, apply=apply)
 
+ 
 @main.command()
 def capture():
     """Capture the current environment configuration."""
@@ -91,9 +94,15 @@ def capture():
     except Exception as e:
         click.echo(f"❌ {t('capture_failed')}: {e}", err=True)
 
+ 
 @main.command()
 @click.option('--project-path', '-p', type=click.Path(exists=True), default='.')
-@click.option('--kind', type=click.Choice(['devcontainer','brewfile','winget','apt','nix']), required=True, help='Export artifact type')
+@click.option(
+    '--kind',
+    type=click.Choice(['devcontainer', 'brewfile', 'winget', 'apt', 'nix']),
+    required=True,
+    help='Export artifact type',
+)
 def export(project_path: str, kind: str):
     """Export project environment artifacts (e.g., devcontainer)."""
     adapter = AdapterFactory.detect()
@@ -124,22 +133,21 @@ def export(project_path: str, kind: str):
         with open(dc_dir / "devcontainer.json", "w") as f:
             json.dump(devcontainer, f, indent=2)
         click.echo("✅ Exported .devcontainer/devcontainer.json")
-    elif kind in ("brewfile","winget","apt","nix"):
+    elif kind in ("brewfile", "winget", "apt", "nix"):
         req = plan.get("requirements", {})
         runtime = (req.get("runtime") or plan.get("project_type") or "").lower()
-        engines = req.get("engines", {})
 
         if kind == "brewfile":
             lines = []
-            if runtime in ("nodejs","bun"):
+            if runtime in ("nodejs", "bun"):
                 lines.append('brew "node"')
-            if runtime in ("python","django"):
+            if runtime in ("python", "django"):
                 lines.append('brew "python"')
             if runtime == "rust":
                 lines.append('brew "rust"')
             if runtime == "go":
                 lines.append('brew "go"')
-            if runtime in ("php","laravel"):
+            if runtime in ("php", "laravel"):
                 lines.append('brew "php"')
                 lines.append('brew "composer"')
             if not lines:
@@ -149,15 +157,15 @@ def export(project_path: str, kind: str):
 
         if kind == "winget":
             lines = []
-            if runtime in ("nodejs","bun"):
+            if runtime in ("nodejs", "bun"):
                 lines.append("winget install OpenJS.NodeJS")
-            if runtime in ("python","django"):
+            if runtime in ("python", "django"):
                 lines.append("winget install Python.Python.3")
             if runtime == "rust":
                 lines.append("winget install Rustlang.Rustup")
             if runtime == "go":
                 lines.append("winget install Google.Go")
-            if runtime in ("php","laravel"):
+            if runtime in ("php", "laravel"):
                 lines.append("winget install PHP.PHP")
                 lines.append("winget install Microsoft.Composer")
             if not lines:
@@ -167,15 +175,15 @@ def export(project_path: str, kind: str):
 
         if kind == "apt":
             lines = []
-            if runtime in ("nodejs","bun"):
+            if runtime in ("nodejs", "bun"):
                 lines.append("sudo apt install -y nodejs npm")
-            if runtime in ("python","django"):
+            if runtime in ("python", "django"):
                 lines.append("sudo apt install -y python3 python3-pip")
             if runtime == "rust":
                 lines.append("# curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh")
             if runtime == "go":
                 lines.append("sudo apt install -y golang")
-            if runtime in ("php","laravel"):
+            if runtime in ("php", "laravel"):
                 lines.append("sudo apt install -y php composer")
             if not lines:
                 lines.append("# Add your apt packages here")
@@ -184,27 +192,28 @@ def export(project_path: str, kind: str):
 
         if kind == "nix":
             pkgs = []
-            if runtime in ("nodejs","bun"):
+            if runtime in ("nodejs", "bun"):
                 pkgs.append("nodejs")
-            if runtime in ("python","django"):
+            if runtime in ("python", "django"):
                 pkgs.append("python3")
             if runtime == "rust":
                 pkgs.append("rustc")
                 pkgs.append("cargo")
             if runtime == "go":
                 pkgs.append("go")
-            if runtime in ("php","laravel"):
+            if runtime in ("php", "laravel"):
                 pkgs.append("php")
                 pkgs.append("composer")
             if not pkgs:
                 pkgs.append("# add packages")
             shell_nix = f'''{{ pkgs ? import <nixpkgs> {{ }} }}:
 pkgs.mkShell {{
-  buildInputs = [ {" ".join(f"pkgs.{p}" if p[0] != "#" else "" for p in pkgs)} ];
+  buildInputs = [ {" ".join(f"pkgs.{p}" if p and p[0] != "#" else "" for p in pkgs)} ];
 }}
 '''
             Path(project_path, "shell.nix").write_text(shell_nix)
             click.echo("✅ Exported shell.nix")
+
 
 if __name__ == '__main__':
     main()

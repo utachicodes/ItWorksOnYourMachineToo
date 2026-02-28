@@ -21,7 +21,6 @@ import subprocess
 from pathlib import Path
 from typing import Union, List, Optional
 import tempfile
-import logging
 
 
 def validate_and_sanitize_path(user_path: str, base_path: Optional[str] = None) -> str:
@@ -108,8 +107,8 @@ def sanitize_command_args(args: Union[str, List[str]]) -> List[str]:
 
 
 def execute_secure_command(
-    cmd: Union[str, List[str]], 
-    cwd: Optional[str] = None, 
+    cmd: Union[str, List[str]],
+    cwd: Optional[str] = None,
     timeout: int = 300,
     capture_output: bool = True
 ) -> subprocess.CompletedProcess:

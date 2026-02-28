@@ -10,7 +10,7 @@ Projet développé par : Alexandre Albert Ndour
 """
 
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Optional, Union
+from typing import List, Dict, Any, Optional
 import subprocess
 
 
@@ -52,8 +52,15 @@ class ProcessRunnerInterface(ABC):
     """Contrat pour l'exécution de processus."""
     
     @abstractmethod
-    def run(self, cmd: List[str], cwd: Optional[str] = None, env: Optional[Dict[str, str]] = None, 
-            timeout: int = 300, capture_output: bool = True, policy: Optional[str] = "default") -> subprocess.CompletedProcess:
+    def run(
+        self,
+        cmd: List[str],
+        cwd: Optional[str] = None,
+        env: Optional[Dict[str, str]] = None,
+        timeout: int = 300,
+        capture_output: bool = True,
+        policy: Optional[str] = "default",
+    ) -> subprocess.CompletedProcess:
         pass
 
     @abstractmethod

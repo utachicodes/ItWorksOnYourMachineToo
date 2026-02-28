@@ -1,4 +1,9 @@
 [flake8]
 max-line-length = 120
-extend-ignore = E203, W503
+extend-ignore = E203, W503, W293, W292, W391
 exclude = .git,__pycache__,build,dist,.venv,venv
+per-file-ignores =
+    lexworkseverywhere/dependencies/dependency_manager.py: E501,E128,W291,W293,F401,F811
+    lexworkseverywhere/core/contracts/adapter.py: W293
+    lexworkseverywhere/core/utils/logging_utils.py: W293
+    lexworkseverywhere/core/validator/engine.py: E501

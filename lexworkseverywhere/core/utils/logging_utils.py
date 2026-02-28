@@ -234,7 +234,6 @@ def start_timer(operation: str):
     Args:
         operation: Nom de l'opération à chronométrer
     """
-    global _performance_metrics
     _performance_metrics.start_timer(operation)
 
 
@@ -248,7 +247,6 @@ def stop_timer(operation: str) -> float:
     Returns:
         Temps écoulé en secondes
     """
-    global _performance_metrics
     return _performance_metrics.stop_timer(operation)
 
 
@@ -262,7 +260,6 @@ def get_average_time(operation: str) -> Optional[float]:
     Returns:
         Temps moyen en secondes
     """
-    global _performance_metrics
     return _performance_metrics.get_average_time(operation)
 
 
@@ -276,5 +273,4 @@ def get_total_operations(operation: str) -> int:
     Returns:
         Nombre total d'opérations
     """
-    global _performance_metrics
     return _performance_metrics.get_total_operations(operation)

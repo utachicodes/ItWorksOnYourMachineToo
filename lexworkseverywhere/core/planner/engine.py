@@ -9,9 +9,8 @@ Il est totalement agnostique vis-à-vis du système d'exploitation.
 Projet développé par : Alexandre Albert Ndour
 """
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, Any
 import json
-import yaml
 from ..contracts.adapter import OSAdapter
 
 
@@ -66,7 +65,7 @@ class ProjectPlanner:
             'terraform': ['.tf', '.tfvars'],
             'ansible': ['playbook.yml', 'ansible.cfg'],
         }
-        self._cache = {} # Simple memory cache
+        self._cache = {}  # Simple memory cache
 
     def _calculate_project_hash(self, project_path: str) -> str:
         """Calcule un hash basé sur les fichiers clés du projet pour l'invalidation du cache."""
@@ -139,8 +138,6 @@ class ProjectPlanner:
 
     def _apply_heuristics(self, project_path: str) -> str:
         """Applique des heuristiques pour deviner le type de projet si inconnu."""
-        # 1. Shebang Detection
-        # Check for a main/entry file if possible, or scan first few files
         entry_candidates = ["main.py", "index.js", "app.py", "script.sh"]
         for cand in entry_candidates:
             p = f"{project_path}/{cand}"
@@ -148,11 +145,16 @@ class ProjectPlanner:
                 content = self.adapter.fs.read_text(p)
                 if content.startswith("#!"):
                     first_line = content.splitlines()[0]
-                    if "python" in first_line: return "python"
-                    if "node" in first_line: return "nodejs"
-                    if "ruby" in first_line: return "ruby"
-                    if "perl" in first_line: return "perl"
-                    if "bash" in first_line or "sh" in first_line: return "shell"
+                    if "python" in first_line:
+                        return "python"
+                    if "node" in first_line:
+                        return "nodejs"
+                    if "ruby" in first_line:
+                        return "ruby"
+                    if "perl" in first_line:
+                        return "perl"
+                    if "bash" in first_line or "sh" in first_line:
+                        return "shell"
 
         # 2. Folder-based heuristics
         if self.adapter.fs.exists(f"{project_path}/src") and self.adapter.fs.exists(f"{project_path}/include"):
@@ -170,10 +172,13 @@ class ProjectPlanner:
         
         # Specialized runtimes
         if project_type == "nodejs":
-            if self.adapter.fs.exists(f"{project_path}/bun.lock") or self.adapter.fs.exists(f"{project_path}/bun.lockb"):
+            if (
+                self.adapter.fs.exists(f"{project_path}/bun.lock")
+                or self.adapter.fs.exists(f"{project_path}/bun.lockb")
+            ):
                 requirements["runtime"] = "bun"
             elif self.adapter.fs.exists(f"{project_path}/yarn.lock"):
-                requirements["runtime"] = "nodejs" # Default but explicit
+                requirements["runtime"] = "nodejs"  # Default but explicit
         elif project_type == "laravel":
             requirements["runtime"] = "php"
         elif project_type == "django":
@@ -188,30 +193,35 @@ class ProjectPlanner:
             req_file = f"{project_path}/requirements.txt"
             if self.adapter.fs.exists(req_file):
                 content = self.adapter.fs.read_text(req_file)
-                requirements["packages"] = [line.strip() for line in content.splitlines() if line.strip() and not line.startswith('#')]
+                requirements["packages"] = [
+                    line.strip()
+                    for line in content.splitlines()
+                    if line.strip() and not line.startswith("#")
+                ]
         
         # Node.js specific
         elif project_type == "nodejs":
             pkg_file = f"{project_path}/package.json"
             if self.adapter.fs.exists(pkg_file):
                 try:
-                    import json
                     data = json.loads(self.adapter.fs.read_text(pkg_file))
                     requirements["packages"] = list(data.get("dependencies", {}).keys())
                     eng = data.get("engines", {})
                     if isinstance(eng, dict):
                         for k, v in eng.items():
                             requirements["engines"][k] = v
-                except:
+                except Exception:
                     pass
 
-        # pyproject.toml (Poetry/PDM) engines
         pyproj = f"{project_path}/pyproject.toml"
         if self.adapter.fs.exists(pyproj):
             try:
                 import toml as _toml
                 data = _toml.loads(self.adapter.fs.read_text(pyproj))
-                req_py = data.get("project", {}).get("requires-python") or data.get("tool", {}).get("poetry", {}).get("dependencies", {}).get("python")
+                req_py = (
+                    data.get("project", {}).get("requires-python")
+                    or data.get("tool", {}).get("poetry", {}).get("dependencies", {}).get("python")
+                )
                 if req_py:
                     requirements["engines"]["python"] = req_py
             except Exception:

@@ -12,16 +12,14 @@ import sys
 import platform
 import psutil
 import shutil
-from pathlib import Path
 from rich.console import Console
 from rich.table import Table
 from ..core.contracts.factory import AdapterFactory
 from ..core.planner.engine import ProjectPlanner
 from ..core.engine.engine import ExecutionEngine
 from ..core.i18n import t
-import click
-
 console = Console()
+
 
 def run_doctor(project_path: str = None, apply: bool = False):
     console.print(f"[bold blue]🩺 {t('doctor_title')}[/bold blue]\n")
@@ -69,8 +67,15 @@ def run_doctor(project_path: str = None, apply: bool = False):
                     r = runtime
                     # safe, local autofixes (no sudo)
                     if r == "nodejs":
-                        # corepack if available
-                        adapter.process.run(["bash", "-lc", "command -v corepack >/dev/null 2>&1 && corepack enable || true"], cwd=p, capture_output=True)
+                        adapter.process.run(
+                            [
+                                "bash",
+                                "-lc",
+                                "command -v corepack >/dev/null 2>&1 && corepack enable || true",
+                            ],
+                            cwd=p,
+                            capture_output=True,
+                        )
                         if adapter.fs.exists(f"{p}/package.json"):
                             adapter.process.run(["npm", "install"], cwd=p)
                     elif r in ("python", "django"):
@@ -96,6 +101,7 @@ def run_doctor(project_path: str = None, apply: bool = False):
     else:
         console.print("\n[bold red]❌ " + t("attention") + ".[/bold red]")
         return False
+
 
 if __name__ == "__main__":
     run_doctor()

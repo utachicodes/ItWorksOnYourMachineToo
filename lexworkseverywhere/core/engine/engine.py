@@ -9,7 +9,7 @@ Il n'a aucune dépendance directe vers 'os', 'sys' ou 'subprocess'.
 Projet développé par : Alexandre Albert Ndour
 """
 
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 from ..contracts.adapter import OSAdapter
 
 
@@ -64,11 +64,15 @@ class ExecutionEngine:
                 from rich.console import Console
                 from rich.panel import Panel
                 console = Console()
-                console.print(Panel(
-                    f"[bold red]ERREUR :[/bold red] L'outil '[bold]{binary}[/bold]' est manquant pour ce projet.\n\n{suggestion}",
-                    title="Résolution d'Environnement 🇸🇳",
-                    border_style="red"
-                ))
+                console.print(
+                    Panel(
+                        "[bold red]ERREUR :[/bold red] "
+                        f"L'outil '[bold]{binary}[/bold]' est manquant pour ce projet.\n\n"
+                        f"{suggestion}",
+                        title="Résolution d'Environnement 🇸🇳",
+                        border_style="red",
+                    )
+                )
                 return False
         return True
 
@@ -86,13 +90,16 @@ class ExecutionEngine:
 
             # Capture de l'état actuel (via l'adapter si nécessaire, ou géré ici)
             # Pour simplifier, on stocke les env vars actuelles
-            self.environment_stack.append({"env": {}}) # Placeholder
+            self.environment_stack.append({"env": {}})  # Placeholder
             
             # Installation des dépendances via l'interface process de l'adapter
             project_type = plan.get("project_type")
             p_path = plan.get("project_path")
             
-            if (project_type == "python" or project_type == "django") and self.adapter.fs.exists(f"{p_path}/requirements.txt"):
+            if (
+                project_type in ("python", "django")
+                and self.adapter.fs.exists(f"{p_path}/requirements.txt")
+            ):
                 self.adapter.process.run(["pip", "install", "-r", "requirements.txt"], cwd=p_path)
             elif project_type == "nodejs":
                 if self.adapter.fs.exists(f"{p_path}/yarn.lock"):
@@ -103,7 +110,10 @@ class ExecutionEngine:
                     self.adapter.process.run(["bun", "install"], cwd=p_path)
                 elif self.adapter.fs.exists(f"{p_path}/package.json"):
                     self.adapter.process.run(["npm", "install"], cwd=p_path)
-            elif (project_type == "php" or project_type == "laravel") and self.adapter.fs.exists(f"{p_path}/composer.json"):
+            elif (
+                project_type in ("php", "laravel")
+                and self.adapter.fs.exists(f"{p_path}/composer.json")
+            ):
                 self.adapter.process.run(["composer", "install"], cwd=p_path)
             elif project_type == "go" and self.adapter.fs.exists(f"{p_path}/go.mod"):
                 self.adapter.process.run(["go", "mod", "download"], cwd=p_path)
@@ -113,7 +123,7 @@ class ExecutionEngine:
                 self.adapter.process.run(["bundle", "install"], cwd=p_path)
             
             return True
-        except Exception as e:
+        except Exception:
             self.rollback()
             return False
 
@@ -132,9 +142,9 @@ class ExecutionEngine:
         # Determine sandbox policy
         policy = "default"
         if plan.get("project_type") == "docker":
-            policy = "limited" # More permissive for container socket access if needed
+            policy = "limited"  # More permissive for container socket access if needed
         elif plan.get("project_type") in ["shell", "generic-make"]:
-            policy = "strict" # Scripts are high risk
+            policy = "strict"  # Scripts are high risk
 
         # Entrée dans le sandbox avec politique calculée
         self.adapter.sandbox.enter(policy, {"path": plan.get("project_path")})
@@ -168,8 +178,10 @@ class ExecutionEngine:
             try:
                 files = self.adapter.fs.list_dir(p_path)
                 for f in files:
-                    if f.endswith(ext): return f
-            except: pass
+                    if f.endswith(ext):
+                        return f
+            except Exception:
+                pass
             return None
 
         if p_type == "django":

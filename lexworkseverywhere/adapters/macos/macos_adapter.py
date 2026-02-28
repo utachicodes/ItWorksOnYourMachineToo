@@ -3,27 +3,50 @@ import os
 import subprocess
 from pathlib import Path
 from typing import List, Dict, Any, Optional
-from ...core.contracts.adapter import OSAdapter, FileSystemInterface, ProcessRunnerInterface, SandboxInterface, IntegrityInterface
+from ...core.contracts.adapter import (
+    OSAdapter,
+    FileSystemInterface,
+    ProcessRunnerInterface,
+    SandboxInterface,
+    IntegrityInterface,
+)
+
 
 class MacOSFileSystem(FileSystemInterface):
     def exists(self, path: str) -> bool:
         return os.path.exists(path)
+
     def is_dir(self, path: str) -> bool:
         return os.path.isdir(path)
+
     def mkdir(self, path: str, parents: bool = True, exist_ok: bool = True) -> None:
         Path(path).mkdir(parents=parents, exist_ok=exist_ok)
+
     def read_text(self, path: str) -> str:
-        with open(path, 'r') as f: return f.read()
+        with open(path, "r") as f:
+            return f.read()
+
     def write_text(self, path: str, content: str) -> None:
-        with open(path, 'w') as f: f.write(content)
+        with open(path, "w") as f:
+            f.write(content)
+
     def list_dir(self, path: str) -> List[str]:
         return os.listdir(path)
+
     def resolve_path(self, path: str) -> str:
         return str(Path(path).resolve())
 
+
 class MacOSProcessRunner(ProcessRunnerInterface):
-    def run(self, cmd: List[str], cwd: Optional[str] = None, env: Optional[Dict[str, str]] = None, 
-            timeout: int = 300, capture_output: bool = True, policy: Optional[str] = "default") -> subprocess.CompletedProcess:
+    def run(
+        self,
+        cmd: List[str],
+        cwd: Optional[str] = None,
+        env: Optional[Dict[str, str]] = None,
+        timeout: int = 300,
+        capture_output: bool = True,
+        policy: Optional[str] = "default",
+    ) -> subprocess.CompletedProcess:
         # En production, 'policy' adapterait l'exécution (ex: sandbox-exec)
         return subprocess.run(cmd, cwd=cwd, env=env, timeout=timeout, capture_output=capture_output, text=True)
 
@@ -32,8 +55,9 @@ class MacOSProcessRunner(ProcessRunnerInterface):
         import subprocess
         try:
             return subprocess.run(["which", name], capture_output=True).returncode == 0
-        except:
+        except Exception:
             return False
+
 
 class MacOSIntegrity(IntegrityInterface):
     def get_binary_hash(self, binary_path: str) -> str:
@@ -55,12 +79,15 @@ class MacOSIntegrity(IntegrityInterface):
         except Exception:
             return False
 
+
 class MacOSSandbox(SandboxInterface):
     def enter(self, policy: str, context: Dict[str, Any]) -> bool:
         # macOS-specific sandboxing logic
         return True
+
     def exit(self) -> bool:
         return True
+
 
 class MacOSAdapter(OSAdapter):
     def __init__(self):
@@ -68,18 +95,29 @@ class MacOSAdapter(OSAdapter):
         self._process = MacOSProcessRunner()
         self._sandbox = MacOSSandbox()
         self._integrity = MacOSIntegrity()
-    
+
     @property
-    def fs(self) -> FileSystemInterface: return self._fs
+    def fs(self) -> FileSystemInterface:
+        return self._fs
+
     @property
-    def process(self) -> ProcessRunnerInterface: return self._process
+    def process(self) -> ProcessRunnerInterface:
+        return self._process
+
     @property
-    def sandbox(self) -> SandboxInterface: return self._sandbox
+    def sandbox(self) -> SandboxInterface:
+        return self._sandbox
+
     @property
-    def integrity(self) -> IntegrityInterface: return self._integrity
-    
-    def get_os_name(self) -> str: return "macos"
-    def normalize_path(self, path: str) -> str: return str(Path(path).resolve())
+    def integrity(self) -> IntegrityInterface:
+        return self._integrity
+
+    def get_os_name(self) -> str:
+        return "macos"
+
+    def normalize_path(self, path: str) -> str:
+        return str(Path(path).resolve())
+
     def get_install_suggestion(self, binary_name: str) -> str:
         mapping = {
             "npm": "brew install node",
