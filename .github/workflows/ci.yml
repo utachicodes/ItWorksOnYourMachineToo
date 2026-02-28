@@ -46,11 +46,5 @@ jobs:
       - name: Verify CLI
         run: |
           python -c "import lexworkseverywhere; print('VERSION', getattr(lexworkseverywhere,'__version__','n/a'))"
-          python - <<'PY'
-from click.testing import CliRunner
-from lexworkseverywhere.cli.main import main
-r = CliRunner().invoke(main, ['--version'])
-print(r.exit_code, 'VERSION_OK')
-r = CliRunner().invoke(main, ['doctor'])
-print(r.exit_code, 'DOCTOR_OK')
-PY
+          python -c "from click.testing import CliRunner; from lexworkseverywhere.cli.main import main; r=CliRunner().invoke(main, ['--version']); print(r.exit_code, 'VERSION_OK')"
+          python -c "from click.testing import CliRunner; from lexworkseverywhere.cli.main import main; r=CliRunner().invoke(main, ['doctor']); print(r.exit_code, 'DOCTOR_OK')"
