@@ -16,16 +16,13 @@ from ...adapters.linux.linux_adapter import LinuxAdapter
 
 
 class AdapterFactory:
-    """
-    Detects the current platform and instantiates the correct adapter.
-    """
-    
+    """Detects the current platform and instantiates the correct adapter."""
+
     @staticmethod
     def detect() -> OSAdapter:
         sys_name = platform.system().lower()
         if sys_name == "windows":
             return WindowsAdapter()
-        elif sys_name == "darwin":
+        if sys_name == "darwin":
             return MacOSAdapter()
-        else:
-            return LinuxAdapter()
+        return LinuxAdapter()

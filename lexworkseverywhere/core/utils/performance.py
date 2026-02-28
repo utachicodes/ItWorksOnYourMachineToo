@@ -26,7 +26,7 @@ def measure_memory_peak(name: str):
     """Décorateur pour mesurer le pic de mémoire (très basique via psutil)."""
     import psutil
     import os
-    
+
     def decorator(func: Callable):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):

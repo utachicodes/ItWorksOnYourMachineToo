@@ -19,10 +19,10 @@ class EnvironmentProfiler:
     """
     Groups environment metrics captured via an OSAdapter.
     """
-    
+
     def __init__(self, adapter: OSAdapter):
         self.adapter = adapter
-    
+
     def capture_profile(self) -> Dict[str, Any]:
         """
         Capture un profil complet via l'adaptateur.

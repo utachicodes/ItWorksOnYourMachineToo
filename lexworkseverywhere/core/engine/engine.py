@@ -17,7 +17,7 @@ class ExecutionEngine:
     """
     Orchestrates project execution via a strict OS contract.
     """
-    
+
     def __init__(self, adapter: OSAdapter):
         self.adapter = adapter
         self.environment_stack = []
@@ -54,15 +54,16 @@ class ExecutionEngine:
             "terraform": ["terraform"],
             "ansible": ["ansible-playbook"],
             "generic-make": ["make"],
-            "generic-cmake": ["cmake", "make"]
+            "generic-cmake": ["cmake", "make"],
         }
-        
+
         needed = req_map.get(project_type, [])
         for binary in needed:
             if not self.adapter.process.has_binary(binary):
                 suggestion = self.adapter.get_install_suggestion(binary)
                 from rich.console import Console
                 from rich.panel import Panel
+
                 console = Console()
                 console.print(
                     Panel(
@@ -84,18 +85,18 @@ class ExecutionEngine:
 
             # 0. Vérification proactive des outils système
             runtime = plan.get("requirements", {}).get("runtime", project_type)
-            
+
             if not self.check_system_requirements(runtime):
                 return False
 
             # Capture de l'état actuel (via l'adapter si nécessaire, ou géré ici)
             # Pour simplifier, on stocke les env vars actuelles
             self.environment_stack.append({"env": {}})  # Placeholder
-            
+
             # Installation des dépendances via l'interface process de l'adapter
             project_type = plan.get("project_type")
             p_path = plan.get("project_path")
-            
+
             if (
                 project_type in ("python", "django")
                 and self.adapter.fs.exists(f"{p_path}/requirements.txt")
@@ -121,7 +122,7 @@ class ExecutionEngine:
                 self.adapter.process.run(["cargo", "build"], cwd=p_path)
             elif project_type == "rails" and self.adapter.fs.exists(f"{p_path}/Gemfile"):
                 self.adapter.process.run(["bundle", "install"], cwd=p_path)
-            
+
             return True
         except Exception:
             self.rollback()
@@ -130,11 +131,12 @@ class ExecutionEngine:
     def execute(self, plan: Dict[str, Any], args: List[str] = None) -> Dict[str, Any]:
         """Exécute le projet dans le bac à sable de l'adaptateur."""
         import time
+
         if args is None:
             args = []
-            
+
         cmd = self._build_command(plan, args)
-        
+
         # Telemetry Start
         start_time = time.perf_counter()
         print(f"METRIC: Starting execution for {plan.get('project_path')}")
@@ -148,19 +150,19 @@ class ExecutionEngine:
 
         # Entrée dans le sandbox avec politique calculée
         self.adapter.sandbox.enter(policy, {"path": plan.get("project_path")})
-        
+
         try:
             result = self.adapter.process.run(cmd, cwd=plan.get("project_path"))
-            
+
             # Telemetry Success
             duration = time.perf_counter() - start_time
             print(f"METRIC: Execution successful in {duration:.4f}s")
-            
+
             return {
                 "success": result.returncode == 0,
                 "stdout": result.stdout,
                 "stderr": result.stderr,
-                "duration": duration
+                "duration": duration,
             }
         except Exception as e:
             # Telemetry Error
@@ -172,7 +174,7 @@ class ExecutionEngine:
     def _build_command(self, plan: Dict[str, Any], args: List[str]) -> List[str]:
         p_type = plan.get("project_type")
         p_path = plan.get("project_path")
-        
+
         # Helper to find first file with extension
         def find_ext(ext):
             try:
@@ -186,21 +188,21 @@ class ExecutionEngine:
 
         if p_type == "django":
             return ["python3", "manage.py", "runserver"] + args
-        elif p_type == "laravel":
+        if p_type == "laravel":
             return ["php", "artisan", "serve"] + args
-        elif p_type == "rails":
+        if p_type == "rails":
             return ["bundle", "exec", "rails", "server"] + args
-        elif p_type == "flutter":
+        if p_type == "flutter":
             return ["flutter", "run"] + args
-        elif p_type == "dotnet":
+        if p_type == "dotnet":
             return ["dotnet", "run"] + args
-        elif p_type == "python":
+        if p_type == "python":
             entry = "main.py"
             if not self.adapter.fs.exists(f"{p_path}/{entry}"):
                 entry = find_ext(".py") or entry
             return ["python3", entry] + args
-            
-        elif p_type == "nodejs":
+
+        if p_type == "nodejs":
             # server.js est très commun pour les apps backend
             entry = "server.js"
             if not self.adapter.fs.exists(f"{p_path}/{entry}"):
@@ -208,26 +210,26 @@ class ExecutionEngine:
             if not self.adapter.fs.exists(f"{p_path}/{entry}"):
                 entry = find_ext(".js") or entry
             return ["node", entry] + args
-            
-        elif p_type == "go":
+
+        if p_type == "go":
             return ["go", "run", "."] + args
-        elif p_type == "rust":
+        if p_type == "rust":
             return ["cargo", "run"] + args
-        elif p_type == "generic-make":
+        if p_type == "generic-make":
             return ["make", "run"] + args
-        elif p_type == "php":
+        if p_type == "php":
             entry = "index.php"
             if not self.adapter.fs.exists(f"{p_path}/{entry}"):
                 entry = find_ext(".php") or entry
             return ["php", entry] + args
-        elif p_type == "ruby":
+        if p_type == "ruby":
             entry = "main.rb"
             if not self.adapter.fs.exists(f"{p_path}/{entry}"):
                 entry = find_ext(".rb") or entry
             return ["ruby", entry] + args
-        elif p_type == "dart":
+        if p_type == "dart":
             return ["dart", "run"] + args
-            
+
         return ["echo", f"Project type '{p_type}' detected but no default run command defined."] + args
 
     def rollback(self):

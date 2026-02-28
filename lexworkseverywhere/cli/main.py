@@ -2,8 +2,6 @@
 import click
 import json
 from pathlib import Path
- 
-
 from ..core.contracts.factory import AdapterFactory
 from ..core.planner.engine import ProjectPlanner
 from ..core.engine.engine import ExecutionEngine
@@ -14,7 +12,7 @@ from ..core.security.license import LicenseManager
 from ..core.profiler import EnvironmentProfiler
 from ..core.i18n import set_locale, t
 
- 
+
 @click.group()
 @click.version_option(version="2.1.0")
 @click.option('--lang', type=click.Choice(['en', 'fr']), default='en', help='Language for CLI output')
@@ -25,7 +23,7 @@ def main(lang: str):
     branding = LicenseManager.get_branding_header()
     console.print(Panel(branding, border_style="blue"))
 
- 
+
 @main.command()
 @click.option('--project-path', '-p', type=click.Path(exists=True), default='.')
 def scan(project_path: str):
@@ -38,7 +36,7 @@ def scan(project_path: str):
     except Exception as e:
         click.echo(f"{t('fatal_error')}: {e}", err=True)
 
- 
+
 @main.command()
 @click.option('--project-path', '-p', type=click.Path(exists=True), default='.')
 def run(project_path: str):
@@ -47,29 +45,24 @@ def run(project_path: str):
         adapter = AdapterFactory.detect()
         planner = ProjectPlanner(adapter)
         engine = ExecutionEngine(adapter)
-        
         click.echo(f"🔍 {t('scan_start')}")
         plan = planner.plan_project(project_path)
-        
         click.echo(f"🛠️ {t('prepare_env')}")
         if not engine.prepare(plan):
             click.echo("❌ Preparation failed", err=True)
             return
-
         click.echo(f"🚀 {t('execute')}")
         result = engine.execute(plan)
-        
         if result['success']:
             click.echo(f"✅ {t('success')}")
             click.echo(result['stdout'])
         else:
             click.echo(f"❌ {t('failure')}", err=True)
             click.echo(result['stderr'], err=True)
-            
     except Exception as e:
         click.echo(f"{t('fatal_error')}: {e}", err=True)
 
- 
+
 @main.command()
 @click.option('--project-path', '-p', type=click.Path(exists=True), required=False)
 @click.option('--apply', is_flag=True, default=False, help='Apply safe local fixes when possible')
@@ -77,7 +70,7 @@ def doctor(project_path: str = None, apply: bool = False):
     """Verify host and optionally project compatibility with LexWorksEverywhere."""
     run_doctor(project_path=project_path, apply=apply)
 
- 
+
 @main.command()
 def capture():
     """Capture the current environment configuration."""
@@ -85,16 +78,14 @@ def capture():
         adapter = AdapterFactory.detect()
         profiler = EnvironmentProfiler(adapter)
         profile = profiler.capture_profile()
-        
         output_path = ".lexworkseverywhere.json"
         with open(output_path, "w") as f:
             json.dump(profile, f, indent=2)
-            
         click.echo(f"✅ {t('profile_saved')} {output_path}")
     except Exception as e:
         click.echo(f"❌ {t('capture_failed')}: {e}", err=True)
 
- 
+
 @main.command()
 @click.option('--project-path', '-p', type=click.Path(exists=True), default='.')
 @click.option(
@@ -136,7 +127,6 @@ def export(project_path: str, kind: str):
     elif kind in ("brewfile", "winget", "apt", "nix"):
         req = plan.get("requirements", {})
         runtime = (req.get("runtime") or plan.get("project_type") or "").lower()
-
         if kind == "brewfile":
             lines = []
             if runtime in ("nodejs", "bun"):
@@ -154,7 +144,6 @@ def export(project_path: str, kind: str):
                 lines.append('# Add your packages here')
             Path(project_path, "Brewfile").write_text("\n".join(lines) + "\n")
             click.echo("✅ Exported Brewfile")
-
         if kind == "winget":
             lines = []
             if runtime in ("nodejs", "bun"):
@@ -172,7 +161,6 @@ def export(project_path: str, kind: str):
                 lines.append("# Add your installers here")
             Path(project_path, "winget.txt").write_text("\n".join(lines) + "\n")
             click.echo("✅ Exported winget.txt")
-
         if kind == "apt":
             lines = []
             if runtime in ("nodejs", "bun"):
@@ -189,7 +177,6 @@ def export(project_path: str, kind: str):
                 lines.append("# Add your apt packages here")
             Path(project_path, "apt.txt").write_text("\n".join(lines) + "\n")
             click.echo("✅ Exported apt.txt")
-
         if kind == "nix":
             pkgs = []
             if runtime in ("nodejs", "bun"):

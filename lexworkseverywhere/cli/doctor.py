@@ -18,12 +18,13 @@ from ..core.contracts.factory import AdapterFactory
 from ..core.planner.engine import ProjectPlanner
 from ..core.engine.engine import ExecutionEngine
 from ..core.i18n import t
+
 console = Console()
 
 
 def run_doctor(project_path: str = None, apply: bool = False):
     console.print(f"[bold blue]🩺 {t('doctor_title')}[/bold blue]\n")
-    
+
     table = Table(title=t("doctor_table_title"))
     table.add_column(t("component"), style="cyan")
     table.add_column(t("status"), style="magenta")
@@ -65,7 +66,6 @@ def run_doctor(project_path: str = None, apply: bool = False):
                 try:
                     p = plan.get("project_path")
                     r = runtime
-                    # safe, local autofixes (no sudo)
                     if r == "nodejs":
                         adapter.process.run(
                             [
@@ -94,13 +94,12 @@ def run_doctor(project_path: str = None, apply: bool = False):
             table.add_row("project", "❌ " + t("error"), str(e))
 
     console.print(table)
-    
+
     if is_py_ok and is_os_ok:
         console.print("\n[bold green]✅ " + t("ready") + " ![/bold green]")
         return True
-    else:
-        console.print("\n[bold red]❌ " + t("attention") + ".[/bold red]")
-        return False
+    console.print("\n[bold red]❌ " + t("attention") + ".[/bold red]")
+    return False
 
 
 if __name__ == "__main__":

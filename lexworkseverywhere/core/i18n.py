@@ -67,4 +67,3 @@ def set_locale(lang: str) -> None:
 
 def t(key: str) -> str:
     return MESSAGES.get(LANG, MESSAGES["en"]).get(key, key)
-

@@ -16,27 +16,27 @@ import subprocess
 
 class FileSystemInterface(ABC):
     """Contrat pour les opérations sur le système de fichiers."""
-    
+
     @abstractmethod
     def exists(self, path: str) -> bool:
         pass
-    
+
     @abstractmethod
     def is_dir(self, path: str) -> bool:
         pass
-    
+
     @abstractmethod
     def mkdir(self, path: str, parents: bool = True, exist_ok: bool = True) -> None:
         pass
-    
+
     @abstractmethod
     def read_text(self, path: str) -> str:
         pass
-    
+
     @abstractmethod
     def write_text(self, path: str, content: str) -> None:
         pass
-    
+
     @abstractmethod
     def list_dir(self, path: str) -> List[str]:
         """Liste les fichiers et dossiers dans un répertoire."""
@@ -50,7 +50,7 @@ class FileSystemInterface(ABC):
 
 class ProcessRunnerInterface(ABC):
     """Contrat pour l'exécution de processus."""
-    
+
     @abstractmethod
     def run(
         self,
@@ -71,12 +71,12 @@ class ProcessRunnerInterface(ABC):
 
 class IntegrityInterface(ABC):
     """Contrat pour la vérification d'intégrité des binaires."""
-    
+
     @abstractmethod
     def get_binary_hash(self, binary_path: str) -> str:
         """Calcule le hash SHA256 d'un exécutable."""
         pass
-    
+
     @abstractmethod
     def verify_signature(self, binary_path: str) -> bool:
         """Vérifie la signature cryptographique (si applicable)."""
@@ -85,7 +85,7 @@ class IntegrityInterface(ABC):
 
 class SandboxInterface(ABC):
     """Contrat pour l'isolation et le sandboxing."""
-    
+
     @abstractmethod
     def enter(self, policy: str, context: Dict[str, Any]) -> bool:
         """
@@ -95,7 +95,7 @@ class SandboxInterface(ABC):
         - 'default' : Politique standard LexWorksEverywhere.
         """
         pass
-    
+
     @abstractmethod
     def exit(self) -> bool:
         pass
@@ -103,22 +103,23 @@ class SandboxInterface(ABC):
 
 class OSAdapter(ABC):
     """Interface globale de l'adaptateur OS."""
+
     __author__ = "Alexandre Albert Ndour"
-    
+
     @staticmethod
     def get_author() -> str:
         return "Alexandre Albert Ndour"
-    
+
     @property
     @abstractmethod
     def fs(self) -> FileSystemInterface:
         pass
-    
+
     @property
     @abstractmethod
     def process(self) -> ProcessRunnerInterface:
         pass
-    
+
     @property
     @abstractmethod
     def sandbox(self) -> SandboxInterface:
@@ -128,7 +129,7 @@ class OSAdapter(ABC):
     @abstractmethod
     def integrity(self) -> IntegrityInterface:
         pass
-    
+
     @abstractmethod
     def get_os_name(self) -> str:
         """Retourne le nom de l'OS (macos, linux, windows)."""

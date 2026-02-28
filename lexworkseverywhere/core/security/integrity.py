@@ -34,14 +34,14 @@ class IntegrityManager:
     def is_binary_safe(self, binary_path: str, expected_version: str) -> bool:
         """Vérifie si le binaire correspond à une empreinte connue."""
         current_hash = self.adapter.integrity.get_binary_hash(binary_path)
-        
+
         # En mode strict, on compare avec la DB
         lookup_key = f"{expected_version}"
         target_hashes = KNOWN_GOOD_HASHES.get(self.os_name, {})
-        
+
         if lookup_key in target_hashes:
             return current_hash == target_hashes[lookup_key]
-            
+
         # Si inconnu, on peut choisir d'autoriser avec un warning ou bloquer
         return True  # Pour l'instant, on laisse passer les inconnus
 

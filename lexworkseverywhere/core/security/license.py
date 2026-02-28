@@ -19,13 +19,13 @@ class LicenseManager:
             # Tenter de trouver le fichier LICENSE à la racine du package s'il est installé
             base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
             license_path = os.path.join(base_dir, "LICENSE")
-            
+
         if not os.path.exists(license_path):
             return False
 
         with open(license_path, "rb") as f:
             current_hash = hashlib.sha256(f.read()).hexdigest()
-        
+
         return current_hash == LicenseManager.LICENSE_HASH
 
     @staticmethod

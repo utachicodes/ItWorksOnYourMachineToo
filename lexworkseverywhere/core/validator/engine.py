@@ -15,10 +15,8 @@ from ..contracts.adapter import OSAdapter
 
 
 class EnvironmentValidator:
-    """
-    Analyzes execution failures and suggests fixes via OSAdapter.
-    """
-    
+    """Analyzes execution failures and suggests fixes via OSAdapter."""
+
     def __init__(self, adapter: OSAdapter):
         self.adapter = adapter
         self.common_patterns = [
@@ -50,7 +48,7 @@ class EnvironmentValidator:
     def validate_failure(self, stderr: str) -> Dict[str, Any]:
         """Analyse le stderr pour identifier le type d'échec."""
         results = {"detected_issues": [], "is_fixable": False}
-        
+
         for p in self.common_patterns:
             match = re.search(p["pattern"], stderr, re.IGNORECASE)
             if match:
@@ -60,7 +58,7 @@ class EnvironmentValidator:
                     "context": match.group(0)
                 })
                 results["is_fixable"] = True
-                
+
         return results
 
     def propose_fix(self, issue: Dict[str, Any]) -> Optional[List[str]]:
