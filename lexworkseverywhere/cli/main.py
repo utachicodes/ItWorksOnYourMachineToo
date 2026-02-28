@@ -70,9 +70,10 @@ def run(project_path: str):
 
 @main.command()
 @click.option('--project-path', '-p', type=click.Path(exists=True), required=False)
-def doctor(project_path: str = None):
+@click.option('--apply', is_flag=True, default=False, help='Apply safe local fixes when possible')
+def doctor(project_path: str = None, apply: bool = False):
     """Verify host and optionally project compatibility with LexWorksEverywhere."""
-    run_doctor(project_path=project_path)
+    run_doctor(project_path=project_path, apply=apply)
 
 @main.command()
 def capture():

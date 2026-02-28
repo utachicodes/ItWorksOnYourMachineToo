@@ -19,10 +19,11 @@ from ..core.contracts.factory import AdapterFactory
 from ..core.planner.engine import ProjectPlanner
 from ..core.engine.engine import ExecutionEngine
 from ..core.i18n import t
+import click
 
 console = Console()
 
-def run_doctor(project_path: str = None):
+def run_doctor(project_path: str = None, apply: bool = False):
     console.print(f"[bold blue]🩺 {t('doctor_title')}[/bold blue]\n")
     
     table = Table(title=t("doctor_table_title"))
@@ -62,6 +63,28 @@ def run_doctor(project_path: str = None):
             ok = engine.check_system_requirements(runtime)
             status = "✅ " + t("ok") if ok else "❌ " + t("error")
             table.add_row(f"project:{runtime}", status, plan.get("project_type"))
+            if apply:
+                try:
+                    p = plan.get("project_path")
+                    r = runtime
+                    # safe, local autofixes (no sudo)
+                    if r == "nodejs":
+                        # corepack if available
+                        adapter.process.run(["bash", "-lc", "command -v corepack >/dev/null 2>&1 && corepack enable || true"], cwd=p, capture_output=True)
+                        if adapter.fs.exists(f"{p}/package.json"):
+                            adapter.process.run(["npm", "install"], cwd=p)
+                    elif r in ("python", "django"):
+                        if adapter.fs.exists(f"{p}/requirements.txt"):
+                            adapter.process.run(["pip", "install", "-r", "requirements.txt"], cwd=p)
+                    elif r in ("php", "laravel"):
+                        if adapter.fs.exists(f"{p}/composer.json"):
+                            adapter.process.run(["composer", "install"], cwd=p)
+                    elif r == "rails":
+                        if adapter.fs.exists(f"{p}/Gemfile"):
+                            adapter.process.run(["bundle", "install"], cwd=p)
+                    table.add_row("autofix", "✅ " + t("ok"), f"{runtime}")
+                except Exception as e:
+                    table.add_row("autofix", "❌ " + t("error"), str(e))
         except Exception as e:
             table.add_row("project", "❌ " + t("error"), str(e))
 
