@@ -109,6 +109,10 @@ def export(project_path: str, kind: str):
             features.append({"ghcr.io/devcontainers/features/node:1": {"version": "lts", "nodeGypDependencies": True}})
         if languages in ["python", "django"]:
             features.append({"ghcr.io/devcontainers/features/python:1": {"version": "3"}})
+        if languages == "go":
+            features.append({"ghcr.io/devcontainers/features/go:1": {"version": "latest"}})
+        if languages == "rust":
+            features.append({"ghcr.io/devcontainers/features/rust:1": {}})
         if not features:
             features.append({"ghcr.io/devcontainers/features/common-utils:2": {}})
         devcontainer = {
@@ -117,7 +121,13 @@ def export(project_path: str, kind: str):
             "features": {k: v for obj in features for k, v in obj.items()},
             "customizations": {
                 "vscode": {
-                    "extensions": ["ms-python.python", "esbenp.prettier-vscode", "ms-azuretools.vscode-docker"]
+                    "extensions": [
+                        "ms-python.python",
+                        "esbenp.prettier-vscode",
+                        "ms-azuretools.vscode-docker",
+                        "rust-lang.rust-analyzer",
+                        "golang.go"
+                    ]
                 }
             },
             "postCreateCommand": "echo Ready"
