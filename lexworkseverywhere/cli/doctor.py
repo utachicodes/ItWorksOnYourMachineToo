@@ -12,6 +12,7 @@ import sys
 import platform
 import psutil
 import shutil
+import json
 from rich.console import Console
 from rich.table import Table
 from ..core.contracts.factory import AdapterFactory
@@ -22,36 +23,50 @@ from ..core.i18n import t
 console = Console()
 
 
-def run_doctor(project_path: str = None, apply: bool = False):
-    console.print(f"[bold blue]🩺 {t('doctor_title')}[/bold blue]\n")
+def run_doctor(project_path: str = None, apply: bool = False, json_output: bool = False):
+    if not json_output:
+        console.print(f"[bold blue]🩺 {t('doctor_title')}[/bold blue]\n")
 
-    table = Table(title=t("doctor_table_title"))
-    table.add_column(t("component"), style="cyan")
-    table.add_column(t("status"), style="magenta")
-    table.add_column(t("details"), style="green")
+    table = None
+    if not json_output:
+        table = Table(title=t("doctor_table_title"))
+        table.add_column(t("component"), style="cyan")
+        table.add_column(t("status"), style="magenta")
+        table.add_column(t("details"), style="green")
 
     py_version = platform.python_version()
     is_py_ok = sys.version_info >= (3, 9)
-    table.add_row(t("python_version"), "✅ " + t("ok") if is_py_ok else "❌ " + t("error"), py_version)
+    if not json_output:
+        table.add_row(t("python_version"), "✅ " + t("ok") if is_py_ok else "❌ " + t("error"), py_version)
 
     os_name = platform.system()
     is_os_ok = os_name in ["Darwin", "Linux", "Windows"]
-    table.add_row(t("os_name"), "✅ " + t("ok") if is_os_ok else "⚠️ " + t("warn"), os_name)
+    if not json_output:
+        table.add_row(t("os_name"), "✅ " + t("ok") if is_os_ok else "⚠️ " + t("warn"), os_name)
 
     mem = psutil.virtual_memory()
     mem_ok = mem.available > (500 * 1024 * 1024)
-    table.add_row(t("memory"), "✅ " + t("ok") if mem_ok else "⚠️ " + t("low"), f"{mem.available / (1024**3):.2f} GB")
+    if not json_output:
+        table.add_row(t("memory"), "✅ " + t("ok") if mem_ok else "⚠️ " + t("low"), f"{mem.available / (1024**3):.2f} GB")
 
     usage = shutil.disk_usage("/")
     disk_ok = usage.free > (2 * 1024 * 1024 * 1024)
-    table.add_row(t("disk"), "✅ " + t("ok") if disk_ok else "⚠️ " + t("low"), f"{usage.free / (1024**3):.2f} GB")
+    if not json_output:
+        table.add_row(t("disk"), "✅ " + t("ok") if disk_ok else "⚠️ " + t("low"), f"{usage.free / (1024**3):.2f} GB")
 
+    adapter_name = None
+    adapter_ok = False
     try:
         adapter = AdapterFactory.detect()
-        table.add_row(t("adapter"), "✅ " + t("ok"), adapter.get_os_name())
+        adapter_name = adapter.get_os_name()
+        adapter_ok = True
+        if not json_output:
+            table.add_row(t("adapter"), "✅ " + t("ok"), adapter_name)
     except Exception as e:
-        table.add_row(t("adapter"), "❌ " + t("error"), str(e))
+        if not json_output:
+            table.add_row(t("adapter"), "❌ " + t("error"), str(e))
 
+    project_report = None
     if project_path:
         try:
             adapter = AdapterFactory.detect()
@@ -61,7 +76,14 @@ def run_doctor(project_path: str = None, apply: bool = False):
             runtime = plan.get("requirements", {}).get("runtime", plan.get("project_type"))
             ok = engine.check_system_requirements(runtime)
             status = "✅ " + t("ok") if ok else "❌ " + t("error")
-            table.add_row(f"project:{runtime}", status, plan.get("project_type"))
+            if not json_output:
+                table.add_row(f"project:{runtime}", status, plan.get("project_type"))
+            project_report = {
+                "path": project_path,
+                "detected_type": plan.get("project_type"),
+                "runtime": runtime,
+                "requirements_ok": ok,
+            }
             if apply:
                 try:
                     p = plan.get("project_path")
@@ -87,11 +109,37 @@ def run_doctor(project_path: str = None, apply: bool = False):
                     elif r == "rails":
                         if adapter.fs.exists(f"{p}/Gemfile"):
                             adapter.process.run(["bundle", "install"], cwd=p)
-                    table.add_row("autofix", "✅ " + t("ok"), f"{runtime}")
+                    if not json_output:
+                        table.add_row("autofix", "✅ " + t("ok"), f"{runtime}")
+                    if project_report is not None:
+                        project_report["apply"] = {"attempted": True, "ok": True}
                 except Exception as e:
-                    table.add_row("autofix", "❌ " + t("error"), str(e))
+                    if not json_output:
+                        table.add_row("autofix", "❌ " + t("error"), str(e))
+                    if project_report is not None:
+                        project_report["apply"] = {"attempted": True, "ok": False, "error": str(e)}
+            else:
+                if project_report is not None:
+                    project_report["apply"] = {"attempted": False}
         except Exception as e:
-            table.add_row("project", "❌ " + t("error"), str(e))
+            if not json_output:
+                table.add_row("project", "❌ " + t("error"), str(e))
+            project_report = {"path": project_path, "error": str(e)}
+
+    if json_output:
+        report = {
+            "system": {
+                "python": {"version": py_version, "ok": is_py_ok},
+                "os": {"name": os_name, "ok": is_os_ok},
+                "memory": {"available_bytes": mem.available, "ok": mem_ok},
+                "disk": {"free_bytes": usage.free, "ok": disk_ok},
+                "adapter": {"name": adapter_name, "ok": adapter_ok},
+            },
+            "project": project_report,
+            "ready": bool(is_py_ok and is_os_ok),
+        }
+        print(json.dumps(report, indent=2))
+        return bool(is_py_ok and is_os_ok)
 
     console.print(table)
 

@@ -66,9 +66,10 @@ def run(project_path: str):
 @main.command()
 @click.option('--project-path', '-p', type=click.Path(exists=True), required=False)
 @click.option('--apply', is_flag=True, default=False, help='Apply safe local fixes when possible')
-def doctor(project_path: str = None, apply: bool = False):
+@click.option('--json', 'json_out', is_flag=True, default=False, help='Output JSON report')
+def doctor(project_path: str = None, apply: bool = False, json_out: bool = False):
     """Verify host and optionally project compatibility with LexWorksEverywhere."""
-    run_doctor(project_path=project_path, apply=apply)
+    run_doctor(project_path=project_path, apply=apply, json_output=json_out)
 
 
 @main.command()
