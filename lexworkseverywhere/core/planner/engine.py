@@ -166,7 +166,7 @@ class ProjectPlanner:
 
     def _extract_requirements(self, project_path: str, project_type: str) -> Dict[str, Any]:
         """Extrait les besoins du projet sans accès système direct."""
-        requirements = {"runtime": project_type, "packages": []}
+        requirements = {"runtime": project_type, "packages": [], "engines": {}}
         
         # Specialized runtimes
         if project_type == "nodejs":
@@ -198,7 +198,23 @@ class ProjectPlanner:
                     import json
                     data = json.loads(self.adapter.fs.read_text(pkg_file))
                     requirements["packages"] = list(data.get("dependencies", {}).keys())
+                    eng = data.get("engines", {})
+                    if isinstance(eng, dict):
+                        for k, v in eng.items():
+                            requirements["engines"][k] = v
                 except:
                     pass
+
+        # pyproject.toml (Poetry/PDM) engines
+        pyproj = f"{project_path}/pyproject.toml"
+        if self.adapter.fs.exists(pyproj):
+            try:
+                import toml as _toml
+                data = _toml.loads(self.adapter.fs.read_text(pyproj))
+                req_py = data.get("project", {}).get("requires-python") or data.get("tool", {}).get("poetry", {}).get("dependencies", {}).get("python")
+                if req_py:
+                    requirements["engines"]["python"] = req_py
+            except Exception:
+                pass
                     
         return requirements
