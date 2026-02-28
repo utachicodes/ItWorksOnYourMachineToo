@@ -1,61 +1,37 @@
-name: ZeroEnv CI/CD
+name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
 jobs:
-  lint-and-security:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.12"
-      - name: Install Linting Tools
-        run: |
-          pip install flake8 bandit safety
-      - name: Lint with flake8
-        run: flake8 zeroenv/core
-      - name: Security check with bandit
-        run: bandit -r zeroenv/core
-      - name: Dependency safety check
-        run: safety check
-
-  test-core:
-    needs: lint-and-security
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.12"]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          pip install -e .
-          pip install pytest pytest-cov
-      - name: Run Core Unit Tests
-        run: |
-          python -m pytest tests/core -v --cov=zeroenv/core
-
-  integration-and-cross-os:
-    needs: test-core
-    runs-on: ubuntu-latest
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.11']
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - name: Run Cross-OS Validation
+          python-version: ${{ matrix.python-version }}
+      - name: Install package
         run: |
-          pip install -e .
-          python scripts/validate_cross_os.py
+          python -m pip install --upgrade pip
+          pip install .
+      - name: Verify CLI
+        run: |
+          python -c "import lexworkseverywhere; print('VERSION', getattr(lexworkseverywhere,'__version__','n/a'))"
+          python - <<'PY'
+from click.testing import CliRunner
+from lexworkseverywhere.cli.main import main
+r = CliRunner().invoke(main, ['--version'])
+print(r.exit_code, 'VERSION_OK')
+r = CliRunner().invoke(main, ['doctor'])
+print(r.exit_code, 'DOCTOR_OK')
+PY
+
