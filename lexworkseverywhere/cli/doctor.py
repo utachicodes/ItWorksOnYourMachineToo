@@ -13,6 +13,7 @@ import platform
 import psutil
 import shutil
 import json
+import os
 from rich.console import Console
 from rich.table import Table
 from ..core.contracts.factory import AdapterFactory
@@ -53,13 +54,23 @@ def run_doctor(project_path: str = None, apply: bool = False, json_output: bool 
             f"{mem.available / (1024**3):.2f} GB",
         )
 
-    usage = shutil.disk_usage("/")
-    disk_ok = usage.free > (2 * 1024 * 1024 * 1024)
+    disk_free = None
+    try:
+        root_path = "C:\\" if os.name == "nt" else "/"
+        usage = shutil.disk_usage(root_path)
+        disk_free = usage.free
+    except Exception:
+        try:
+            root_path = "C:\\" if os.name == "nt" else "/"
+            disk_free = psutil.disk_usage(root_path).free
+        except Exception:
+            disk_free = None
+    disk_ok = (disk_free is not None) and (disk_free > (2 * 1024 * 1024 * 1024))
     if not json_output:
         table.add_row(
             t("disk"),
             "✅ " + t("ok") if disk_ok else "⚠️ " + t("low"),
-            f"{usage.free / (1024**3):.2f} GB",
+            f"{(disk_free or 0) / (1024**3):.2f} GB" if disk_free is not None else "unknown",
         )
 
     adapter_name = None
@@ -140,7 +151,7 @@ def run_doctor(project_path: str = None, apply: bool = False, json_output: bool 
                 "python": {"version": py_version, "ok": is_py_ok},
                 "os": {"name": os_name, "ok": is_os_ok},
                 "memory": {"available_bytes": mem.available, "ok": mem_ok},
-                "disk": {"free_bytes": usage.free, "ok": disk_ok},
+                "disk": {"free_bytes": disk_free, "ok": disk_ok},
                 "adapter": {"name": adapter_name, "ok": adapter_ok},
             },
             "project": project_report,
