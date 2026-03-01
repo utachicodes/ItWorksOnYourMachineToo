@@ -20,8 +20,12 @@ def main(lang: str):
     """LexWorksEverywhere: Universal development environment manager (v2 Core PUR)."""
     set_locale(lang)
     console = Console()
-    branding = LicenseManager.get_branding_header()
-    console.print(Panel(branding, border_style="blue"))
+    try:
+        if console.is_terminal:
+            branding = LicenseManager.get_branding_header()
+            console.print(Panel(branding, border_style="blue"))
+    except Exception:
+        pass
 
 
 @main.command()

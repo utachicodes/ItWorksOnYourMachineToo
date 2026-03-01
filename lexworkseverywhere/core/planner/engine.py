@@ -29,7 +29,7 @@ class ProjectPlanner:
             "android": ["build.gradle", "settings.gradle", "build.gradle.kts", "AndroidManifest.xml"],
             "ios": ["Podfile", "project.pbxproj", "Info.plist", "Runner.xcworkspace"],
             # Backend & Web Frameworks
-            "laravel": ["artisan", "composer.json"],
+            "laravel": ["artisan"],
             "django": ["manage.py", "wsgi.py", "asgi.py"],
             "rails": ["Gemfile", "config/application.rb", "bin/rails", "Rakefile"],
             "symfony": ["symfony.lock", "bin/console"],
@@ -148,12 +148,18 @@ class ProjectPlanner:
             try:
                 entries = self.adapter.fs.list_dir(path)
             except Exception:
-                return 0
+                entries = []
             # File check in current directory
             if indicator.startswith("."):
                 if any(e.endswith(indicator) for e in entries):
                     return score_indicator(indicator)
             else:
+                # Prefer direct existence check for manifest-style indicators
+                try:
+                    if self.adapter.fs.exists(f"{path}/{indicator}"):
+                        return score_indicator(indicator)
+                except Exception:
+                    pass
                 if indicator in entries:
                     return score_indicator(indicator)
             # Recurse limited depth
