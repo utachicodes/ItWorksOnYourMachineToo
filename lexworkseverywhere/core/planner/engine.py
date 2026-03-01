@@ -24,7 +24,7 @@ class ProjectPlanner:
         self.adapter = adapter
         self.project_types = {
             # Mobile & Cross-platform
-            "flutter": ["pubspec.yaml", "dart-tool"],
+            "flutter": ["dart-tool"],
             "react-native": ["app.json", "metro.config.js"],
             "android": ["build.gradle", "settings.gradle", "build.gradle.kts", "AndroidManifest.xml"],
             "ios": ["Podfile", "project.pbxproj", "Info.plist", "Runner.xcworkspace"],
