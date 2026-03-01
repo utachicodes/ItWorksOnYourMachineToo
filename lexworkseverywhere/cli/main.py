@@ -151,6 +151,8 @@ def export(project_path: str, kind: str):
             if runtime in ("php", "laravel"):
                 lines.append('brew "php"')
                 lines.append('brew "composer"')
+            if 'brew "git"' not in lines:
+                lines.insert(0, 'brew "git"')
             if not lines:
                 lines.append('# Add your packages here')
             Path(project_path, "Brewfile").write_text("\n".join(lines) + "\n")
@@ -168,6 +170,8 @@ def export(project_path: str, kind: str):
             if runtime in ("php", "laravel"):
                 lines.append("winget install PHP.PHP")
                 lines.append("winget install Microsoft.Composer")
+            if "winget install Git.Git" not in lines:
+                lines.insert(0, "winget install Git.Git")
             if not lines:
                 lines.append("# Add your installers here")
             Path(project_path, "winget.txt").write_text("\n".join(lines) + "\n")
@@ -184,6 +188,8 @@ def export(project_path: str, kind: str):
                 lines.append("sudo apt install -y golang")
             if runtime in ("php", "laravel"):
                 lines.append("sudo apt install -y php composer")
+            if "sudo apt install -y git" not in lines:
+                lines.insert(0, "sudo apt install -y git")
             if not lines:
                 lines.append("# Add your apt packages here")
             Path(project_path, "apt.txt").write_text("\n".join(lines) + "\n")
@@ -202,6 +208,8 @@ def export(project_path: str, kind: str):
             if runtime in ("php", "laravel"):
                 pkgs.append("php")
                 pkgs.append("composer")
+            if "git" not in pkgs:
+                pkgs.insert(0, "git")
             if not pkgs:
                 pkgs.append("# add packages")
             shell_nix = f'''{{ pkgs ? import <nixpkgs> {{ }} }}:
