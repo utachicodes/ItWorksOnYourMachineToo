@@ -47,12 +47,20 @@ def run_doctor(project_path: str = None, apply: bool = False, json_output: bool 
     mem = psutil.virtual_memory()
     mem_ok = mem.available > (500 * 1024 * 1024)
     if not json_output:
-        table.add_row(t("memory"), "✅ " + t("ok") if mem_ok else "⚠️ " + t("low"), f"{mem.available / (1024**3):.2f} GB")
+        table.add_row(
+            t("memory"),
+            "✅ " + t("ok") if mem_ok else "⚠️ " + t("low"),
+            f"{mem.available / (1024**3):.2f} GB",
+        )
 
     usage = shutil.disk_usage("/")
     disk_ok = usage.free > (2 * 1024 * 1024 * 1024)
     if not json_output:
-        table.add_row(t("disk"), "✅ " + t("ok") if disk_ok else "⚠️ " + t("low"), f"{usage.free / (1024**3):.2f} GB")
+        table.add_row(
+            t("disk"),
+            "✅ " + t("ok") if disk_ok else "⚠️ " + t("low"),
+            f"{usage.free / (1024**3):.2f} GB",
+        )
 
     adapter_name = None
     adapter_ok = False

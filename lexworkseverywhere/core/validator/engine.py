@@ -29,7 +29,10 @@ class EnvironmentValidator:
                 ),
             },
             {
-                "pattern": r"npm: command not found|yarn: command not found|pnpm: command not found|node: command not found",
+                "pattern": (
+                    r"npm: command not found|yarn: command not found|"
+                    r"pnpm: command not found|node: command not found"
+                ),
                 "category": "missing_runtime",
                 "recommendation": "📦 Node.js tooling missing. Install Node.js (corepack enables yarn/pnpm).",
             },
@@ -57,7 +60,10 @@ class EnvironmentValidator:
                 ),
             },
             {
-                "pattern": r"Cannot find module '(.+)'|ERR_MODULE_NOT_FOUND|Error: Cannot find package '(.+)'",
+                "pattern": (
+                    r"Cannot find module '(.+)'|ERR_MODULE_NOT_FOUND|"
+                    r"Error: Cannot find package '(.+)'"
+                ),
                 "category": "missing_node_package",
                 "recommendation": "📦 JavaScript package missing. Run your package manager install.",
             },
