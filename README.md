@@ -1,5 +1,5 @@
 # LexWorksEverywhere — Universal Development Environment Manager
-[![CI](https://github.com/thesenegalesehitch/LexWorksEverywhere/actions/workflows/ci.yml/badge.svg)](https://github.com/thesenegalesehitch/LexWorksEverywhere/actions/workflows/ci.yml)
+[![CI](https://github.com/thesenegalesehitch/LexWorksEverywhere/actions/workflows/ci.yml/badge.svg)](https://github.com/thesenegalesehitch/LexWorksEverywhere/actions/workflows/ci.yml) ![Coverage](badges/coverage.svg)
 
 LexWorksEverywhere lets you run any software project on any OS without manual setup. It eliminates “works on my machine” by automatically handling OS differences.
 
