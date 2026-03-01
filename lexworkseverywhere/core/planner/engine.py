@@ -31,7 +31,7 @@ class ProjectPlanner:
             # Backend & Web Frameworks
             "laravel": ["artisan"],
             "django": ["manage.py", "wsgi.py", "asgi.py"],
-            "rails": ["Gemfile", "config/application.rb", "bin/rails", "Rakefile"],
+            "rails": ["config/application.rb", "bin/rails", "Rakefile"],
             "symfony": ["symfony.lock", "bin/console"],
             "dotnet": [".sln", ".csproj", ".fsproj"],
             # Languages
