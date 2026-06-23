@@ -7,6 +7,7 @@ from ItWorksOnYourMachineToo.core.config import load_config, get_config_value
 from ItWorksOnYourMachineToo.core.i18n import set_locale, t
 from ItWorksOnYourMachineToo.core.profiler import EnvironmentProfiler
 from ItWorksOnYourMachineToo.core.planner.engine import ProjectPlanner
+from ItWorksOnYourMachineToo.core.engine.engine import ExecutionEngine
 from ItWorksOnYourMachineToo.core.contracts.adapter import OSAdapter
 
 
@@ -199,3 +200,75 @@ class TestExportNewKinds:
         data = json.loads(content)
         assert "services" in data
         assert data["services"]["app"]["image"] == "python:3.12-slim"
+
+
+class TestInitCommand:
+    def test_init_generates_valid_toml(self, tmp_path):
+        import toml
+        config = {
+            "project": {
+                "name": tmp_path.name,
+                "detected_type": "python",
+                "runtime": "python",
+            },
+            "verbose": False,
+            "skip_detection": [],
+            "custom_run_commands": {},
+            "export_defaults": {"kind": "devcontainer"},
+        }
+        config_path = tmp_path / ".itworks.toml"
+        with open(config_path, "w") as f:
+            toml.dump(config, f)
+        assert config_path.exists()
+        loaded = toml.load(config_path)
+        assert loaded["project"]["name"] == tmp_path.name
+        assert loaded["project"]["detected_type"] == "python"
+        assert loaded["project"]["runtime"] == "python"
+
+    def test_init_config_roundtrip(self, tmp_path):
+        import toml
+        config = {
+            "project": {"name": "my-app", "detected_type": "nodejs", "runtime": "nodejs"},
+            "verbose": True,
+            "skip_detection": ["docker"],
+            "custom_run_commands": {"nodejs": "bun start"},
+            "export_defaults": {"kind": "docker-compose"},
+        }
+        config_path = tmp_path / ".itworks.toml"
+        with open(config_path, "w") as f:
+            toml.dump(config, f)
+        loaded = toml.load(config_path)
+        assert loaded["verbose"] is True
+        assert "docker" in loaded["skip_detection"]
+        assert loaded["custom_run_commands"]["nodejs"] == "bun start"
+
+
+class TestJsonOutput:
+    def test_scan_json_plan_structure(self):
+        plan = {
+            "project_path": "/test",
+            "project_type": "python",
+            "os_origin": "linux",
+            "is_portable": True,
+            "requirements": {"runtime": "python", "packages": ["flask==3.0"], "engines": {}},
+        }
+        output = json.dumps(plan, indent=2)
+        data = json.loads(output)
+        assert "project_type" in data
+        assert "requirements" in data
+        assert data["project_type"] == "python"
+        assert data["requirements"]["runtime"] == "python"
+
+    def test_run_json_result_structure(self):
+        result = {"success": True, "stdout": "ok", "stderr": "", "duration": 0.5}
+        output = json.dumps(result, indent=2)
+        data = json.loads(output)
+        assert data["success"] is True
+        assert data["stdout"] == "ok"
+
+    def test_run_json_failure_structure(self):
+        result = {"success": False, "error": "Command not found"}
+        output = json.dumps(result, indent=2)
+        data = json.loads(output)
+        assert data["success"] is False
+        assert "error" in data

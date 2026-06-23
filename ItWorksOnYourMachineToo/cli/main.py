@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import click
 import json
+import toml
 from pathlib import Path
 from ..core.contracts.factory import AdapterFactory
 from ..core.planner.engine import ProjectPlanner
@@ -32,7 +33,8 @@ def main(lang: str):
 @main.command()
 @click.option('--project-path', '-p', type=click.Path(exists=True), default='.')
 @click.option('--verbose', '-v', is_flag=True, default=False, help='Show detailed scan output')
-def scan(project_path: str, verbose: bool):
+@click.option('--json-output', 'json_out', is_flag=True, default=False, help='Output JSON only')
+def scan(project_path: str, verbose: bool, json_out: bool):
     """Analyze a project and generate a universal execution plan."""
     try:
         config = load_config(project_path)
@@ -41,6 +43,9 @@ def scan(project_path: str, verbose: bool):
         adapter = AdapterFactory.detect()
         planner = ProjectPlanner(adapter)
         plan = planner.plan_project(project_path)
+        if json_out:
+            click.echo(json.dumps(plan, indent=2))
+            return
         if verbose:
             console = Console()
             console.print(f"[bold]Project path:[/bold] {plan.get('project_path')}")
@@ -61,7 +66,8 @@ def scan(project_path: str, verbose: bool):
 @main.command()
 @click.option('--project-path', '-p', type=click.Path(exists=True), default='.')
 @click.option('--verbose', '-v', is_flag=True, default=False, help='Show detailed execution output')
-def run(project_path: str, verbose: bool):
+@click.option('--json-output', 'json_out', is_flag=True, default=False, help='Output JSON result only')
+def run(project_path: str, verbose: bool, json_out: bool):
     """Run a project in a secure and isolated environment."""
     try:
         config = load_config(project_path)
@@ -70,27 +76,35 @@ def run(project_path: str, verbose: bool):
         adapter = AdapterFactory.detect()
         planner = ProjectPlanner(adapter)
         engine = ExecutionEngine(adapter)
-        if verbose:
+        if verbose and not json_out:
             click.echo(f"[scan] {t('scan_start')}")
         plan = planner.plan_project(project_path)
-        if verbose:
+        if verbose and not json_out:
             click.echo(f"[prepare] {t('prepare_env')} (type={plan.get('project_type')})")
-        else:
+        elif not json_out:
             click.echo(f"  {t('prepare_env')}")
         if not engine.prepare(plan):
-            click.echo("Preparation failed", err=True)
+            if json_out:
+                click.echo(json.dumps({"success": False, "error": "Preparation failed"}, indent=2))
+            else:
+                click.echo("Preparation failed", err=True)
             return
-        if verbose:
+        if verbose and not json_out:
             click.echo(f"[execute] {t('execute')}")
         result = engine.execute(plan)
-        if result['success']:
+        if json_out:
+            click.echo(json.dumps(result, indent=2))
+        elif result['success']:
             click.echo(f"  {t('success')}")
             click.echo(result['stdout'])
         else:
             click.echo(f"  {t('failure')}", err=True)
             click.echo(result['stderr'], err=True)
     except Exception as e:
-        click.echo(f"{t('fatal_error')}: {e}", err=True)
+        if json_out:
+            click.echo(json.dumps({"success": False, "error": str(e)}, indent=2))
+        else:
+            click.echo(f"{t('fatal_error')}: {e}", err=True)
 
 
 @main.command()
@@ -115,6 +129,42 @@ def capture():
         click.echo(f"  {t('profile_saved')} {output_path}")
     except Exception as e:
         click.echo(f"  {t('capture_failed')}: {e}", err=True)
+
+
+@main.command()
+@click.option('--project-path', '-p', type=click.Path(), default='.', help='Project directory')
+@click.option('--force', is_flag=True, default=False, help='Overwrite existing config')
+def init(project_path: str, force: bool):
+    """Generate a .itworks.toml configuration file."""
+    config_path = Path(project_path) / ".itworks.toml"
+    if config_path.exists() and not force:
+        click.echo(f"Config already exists at {config_path}")
+        click.echo("Use --force to overwrite")
+        return
+    try:
+        adapter = AdapterFactory.detect()
+        planner = ProjectPlanner(adapter)
+        plan = planner.plan_project(project_path)
+        p_type = plan.get("project_type", "unknown")
+        runtime = plan.get("requirements", {}).get("runtime", p_type)
+        config = {
+            "project": {
+                "name": Path(project_path).resolve().name,
+                "detected_type": p_type,
+                "runtime": runtime,
+            },
+            "verbose": False,
+            "skip_detection": [],
+            "custom_run_commands": {},
+            "export_defaults": {"kind": "devcontainer"},
+        }
+        with open(config_path, "w") as f:
+            toml.dump(config, f)
+        click.echo(f"Created {config_path}")
+        click.echo(f"Detected project type: {p_type}")
+        click.echo(f"Detected runtime: {runtime}")
+    except Exception as e:
+        click.echo(f"Failed to create config: {e}", err=True)
 
 
 @main.command()
