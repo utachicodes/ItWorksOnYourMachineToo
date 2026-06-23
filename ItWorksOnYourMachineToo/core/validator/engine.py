@@ -94,6 +94,21 @@ class EnvironmentValidator:
                 "category": "missing_kotlin_dependency",
                 "recommendation": "Kotlin/Java dependency missing. Run './gradlew build' or 'mvn compile'.",
             },
+            {
+                "pattern": r"java\.lang\.ClassNotFoundException|JAVA_HOME|No such file or directory.*java",
+                "category": "missing_jdk",
+                "recommendation": "JDK not found. Install OpenJDK 17+ from adoptium.net.",
+            },
+            {
+                "pattern": r"error: .+toolchain|swift-driver|swiftc: not found|xcrun: error",
+                "category": "missing_swift_toolchain",
+                "recommendation": "Swift toolchain missing. Install Xcode Command Line Tools: xcode-select --install",
+            },
+            {
+                "pattern": r"The term '.*dotnet'|dotnet: not found|NETSDK\d+",
+                "category": "missing_dotnet",
+                "recommendation": ".NET SDK not found. Install from https://dotnet.microsoft.com/download",
+            },
         ]
 
     def validate_failure(self, stderr: str) -> Dict[str, Any]:
@@ -127,4 +142,8 @@ class EnvironmentValidator:
             return ["swift", "package", "resolve"]
         if issue["category"] == "missing_kotlin_dependency":
             return ["gradle", "build"]
+        if issue["category"] == "missing_jdk":
+            return ["java", "-version"]
+        if issue["category"] == "missing_dotnet":
+            return ["dotnet", "--version"]
         return None
