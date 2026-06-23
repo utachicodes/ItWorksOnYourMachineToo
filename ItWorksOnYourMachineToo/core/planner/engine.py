@@ -124,6 +124,11 @@ class ProjectPlanner:
             "Gemfile",
             "pom.xml",
             "build.gradle",
+            "build.gradle.kts",
+            "Package.swift",
+            "mix.exs",
+            "stack.yaml",
+            "build.sbt",
         }
         lock_names = {
             "yarn.lock",
@@ -274,6 +279,77 @@ class ProjectPlanner:
                             requirements["engines"][k] = v
                 except Exception:
                     pass
+
+        # Java (Maven)
+        elif project_type == "java":
+            pom = f"{project_path}/pom.xml"
+            if self.adapter.fs.exists(pom):
+                content = self.adapter.fs.read_text(pom)
+                deps = []
+                import re as _re
+                for m in _re.finditer(r"<artifactId>(.+?)</artifactId>", content):
+                    deps.append(m.group(1))
+                requirements["packages"] = deps
+                version_match = _re.search(r"<java\.version>(.+?)</java\.version>", content)
+                if version_match:
+                    requirements["engines"]["java"] = version_match.group(1)
+            gradle = f"{project_path}/build.gradle"
+            gradle_kts = f"{project_path}/build.gradle.kts"
+            for gf in (gradle, gradle_kts):
+                if self.adapter.fs.exists(gf):
+                    content = self.adapter.fs.read_text(gf)
+                    deps = []
+                    for m in _re.finditer(r"""implementation\s+['"](.+?)['"]""", content):
+                        deps.append(m.group(1))
+                    requirements["packages"] = deps or requirements["packages"]
+                    break
+
+        # Kotlin
+        elif project_type == "kotlin":
+            gradle = f"{project_path}/build.gradle.kts"
+            if self.adapter.fs.exists(gradle):
+                content = self.adapter.fs.read_text(gradle)
+                deps = []
+                import re as _re
+                for m in _re.finditer(r"""implementation\s*[\("'](.+?)["')\]""", content):
+                    deps.append(m.group(1))
+                requirements["packages"] = deps
+
+        # PHP / Laravel / Symfony
+        elif project_type in ("php", "laravel", "symfony"):
+            composer = f"{project_path}/composer.json"
+            if self.adapter.fs.exists(composer):
+                try:
+                    data = json.loads(self.adapter.fs.read_text(composer))
+                    requirements["packages"] = list(data.get("require", {}).keys())
+                    requirements["engines"]["php"] = data.get("require", {}).get("php", "*")
+                except Exception:
+                    pass
+
+        # Swift
+        elif project_type == "swift":
+            pkg = f"{project_path}/Package.swift"
+            if self.adapter.fs.exists(pkg):
+                content = self.adapter.fs.read_text(pkg)
+                import re as _re
+                deps = []
+                for m in _re.finditer(r"""\.package\(\s*url:\s*["'](.+?)["']""", content):
+                    deps.append(m.group(1))
+                requirements["packages"] = deps
+                version_match = _re.search(r"swift-tools-version:\s*(\d+\.\d+)", content)
+                if version_match:
+                    requirements["engines"]["swift"] = version_match.group(1)
+
+        # Scala
+        elif project_type == "scala":
+            sbt = f"{project_path}/build.sbt"
+            if self.adapter.fs.exists(sbt):
+                content = self.adapter.fs.read_text(sbt)
+                deps = []
+                import re as _re
+                for m in _re.finditer(r""""(.+?)"\s*%%\s*"(.+?)"\s*%\s*"(.+?)" """, content):
+                    deps.append(f"{m.group(1)}:{m.group(2)}:{m.group(3)}")
+                requirements["packages"] = deps
 
         pyproj = f"{project_path}/pyproject.toml"
         if self.adapter.fs.exists(pyproj):

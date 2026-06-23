@@ -76,8 +76,23 @@ class EnvironmentValidator:
                 "pattern": r"Permission denied|EACCES",
                 "category": "permission_error",
                 "recommendation": (
-                    "🔐 Permission denied. Check folder permissions or run with elevated privileges if safe."
+                    "Permission denied. Check folder permissions or run with elevated privileges if safe."
                 ),
+            },
+            {
+                "pattern": r"Could not find composer|Composer\\Driver\\FilesystemException",
+                "category": "missing_php_package",
+                "recommendation": "PHP Composer issue. Run 'composer install' or check composer.json validity.",
+            },
+            {
+                "pattern": r"error: .+is not a member of package|no such module '(.+)'",
+                "category": "missing_swift_package",
+                "recommendation": "Swift package missing. Run 'swift package resolve' to fetch dependencies.",
+            },
+            {
+                "pattern": r"Unresolved reference|Cannot resolve symbol",
+                "category": "missing_kotlin_dependency",
+                "recommendation": "Kotlin/Java dependency missing. Run './gradlew build' or 'mvn compile'.",
             },
         ]
 
@@ -105,6 +120,11 @@ class EnvironmentValidator:
             pkg_name = match.group(1) if match else "module_name"
             return ["pip", "install", pkg_name]
         if issue["category"] in ("missing_node_package", "missing_ts_package"):
-            # Par défaut, tenter une installation des dépendances
             return ["npm", "install"]
+        if issue["category"] == "missing_php_package":
+            return ["composer", "install"]
+        if issue["category"] == "missing_swift_package":
+            return ["swift", "package", "resolve"]
+        if issue["category"] == "missing_kotlin_dependency":
+            return ["gradle", "build"]
         return None

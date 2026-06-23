@@ -32,8 +32,8 @@ class ExecutionEngine:
             "rust": ["cargo"],
             "php": ["php", "composer"],
             "ruby": ["ruby", "gem"],
-            "java": ["java"],
-            "kotlin": ["kotlinc"],
+            "java": ["java", "mvn"],
+            "kotlin": ["kotlinc", "gradle"],
             "swift": ["swift"],
             "dart": ["dart"],
             "flutter": ["flutter"],
@@ -122,6 +122,16 @@ class ExecutionEngine:
                 self.adapter.process.run(["cargo", "build"], cwd=p_path)
             elif project_type == "rails" and self.adapter.fs.exists(f"{p_path}/Gemfile"):
                 self.adapter.process.run(["bundle", "install"], cwd=p_path)
+            elif project_type in ("java", "kotlin"):
+                if self.adapter.fs.exists(f"{p_path}/pom.xml"):
+                    self.adapter.process.run(["mvn", "dependency:resolve"], cwd=p_path)
+                elif (self.adapter.fs.exists(f"{p_path}/build.gradle")
+                      or self.adapter.fs.exists(f"{p_path}/build.gradle.kts")):
+                    self.adapter.process.run(["gradle", "dependencies"], cwd=p_path)
+            elif project_type == "swift" and self.adapter.fs.exists(f"{p_path}/Package.swift"):
+                self.adapter.process.run(["swift", "package", "resolve"], cwd=p_path)
+            elif project_type == "scala" and self.adapter.fs.exists(f"{p_path}/build.sbt"):
+                self.adapter.process.run(["sbt", "update"], cwd=p_path)
 
             return True
         except Exception:
@@ -229,6 +239,14 @@ class ExecutionEngine:
             return ["ruby", entry] + args
         if p_type == "dart":
             return ["dart", "run"] + args
+        if p_type in ("java", "kotlin"):
+            if self.adapter.fs.exists(f"{p_path}/pom.xml"):
+                return ["mvn", "exec:java"] + args
+            return ["gradle", "run"] + args
+        if p_type == "swift":
+            return ["swift", "run"] + args
+        if p_type == "scala":
+            return ["sbt", "run"] + args
 
         return ["echo", f"Project type '{p_type}' detected but no default run command defined."] + args
 
