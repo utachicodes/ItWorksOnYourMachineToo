@@ -1,7 +1,7 @@
-# LexWorksEverywhere — Universal Development Environment Manager
-[![CI](https://github.com/thesenegalesehitch/LexWorksEverywhere/actions/workflows/ci.yml/badge.svg)](https://github.com/thesenegalesehitch/LexWorksEverywhere/actions/workflows/ci.yml) ![Coverage](badges/coverage.svg)
+# ItWorksOnYourMachineToo — Universal Development Environment Manager
+[![CI](https://github.com/utachicodes/ItWorksOnYourMachineToo/actions/workflows/ci.yml/badge.svg)](https://github.com/utachicodes/ItWorksOnYourMachineToo/actions/workflows/ci.yml) ![Coverage](badges/coverage.svg)
 
-LexWorksEverywhere lets you run any software project on any OS without manual setup. It eliminates “works on my machine” by automatically handling OS differences.
+ItWorksOnYourMachineToo lets you run any software project on any OS without manual setup. It eliminates "works on my machine" by automatically handling OS differences.
 
 ## Features
 
@@ -20,25 +20,25 @@ LexWorksEverywhere lets you run any software project on any OS without manual se
 ## CLI
 | Command | Description |
 | :--- | :--- |
-| `lexworks scan -p PATH` | Analyze project and generate an execution plan |
-| `lexworks run -p PATH` | Prepare environment and execute the project |
-| `lexworks doctor [-p PATH]` | Check host and optional project requirements |
-| `lexworks capture` | Save the current system profile |
-| `lexworks export --kind devcontainer -p PATH` | Generate a Dev Container |
-| `lexworks export --kind brewfile|winget|apt|nix -p PATH` | Generate OS setup files |
+| `itworks scan -p PATH` | Analyze project and generate an execution plan |
+| `itworks run -p PATH` | Prepare environment and execute the project |
+| `itworks doctor [-p PATH]` | Check host and optional project requirements |
+| `itworks capture` | Save the current system profile |
+| `itworks export --kind devcontainer -p PATH` | Generate a Dev Container |
+| `itworks export --kind brewfile|winget|apt|nix -p PATH` | Generate OS setup files |
 | `--lang en|fr` | Switch CLI language (default: en) |
 
 ## Install
 
 ```bash
-pip install lexworkseverywhere
+pip install itworksonyourmachinetoo
 ```
 
 From source:
 
 ```bash
-git clone https://github.com/alexandrealbertndour/lexworkseverywhere.git
-cd lexworkseverywhere
+git clone https://github.com/utachicodes/ItWorksOnYourMachineToo.git
+cd ItWorksOnYourMachineToo
 pip install -r requirements.txt
 pip install .
 ```
@@ -46,22 +46,22 @@ pip install .
 ## Usage
 
 ```bash
-lexworks scan -p /path/to/project
-lexworks doctor -p /path/to/project
-lexworks doctor --apply -p /path/to/project
-lexworks export --kind devcontainer -p /path/to/project
-lexworks export --kind brewfile -p /path/to/project
-lexworks export --kind winget -p /path/to/project
-lexworks export --kind apt -p /path/to/project
-lexworks export --kind nix -p /path/to/project
-lexworks run -p /path/to/project
+itworks scan -p /path/to/project
+itworks doctor -p /path/to/project
+itworks doctor --apply -p /path/to/project
+itworks export --kind devcontainer -p /path/to/project
+itworks export --kind brewfile -p /path/to/project
+itworks export --kind winget -p /path/to/project
+itworks export --kind apt -p /path/to/project
+itworks export --kind nix -p /path/to/project
+itworks run -p /path/to/project
 ```
 
 ## Architecture (v2 Core PUR)
 
 1. Core PUR: Project Planner, Execution Engine, Environment Validator  
 2. OS Adapters: macOS, Windows, Linux  
-3. Security Layer  
+3. Security Layer
 4. Multi‑OS CI/CD
 
 ## Tests
@@ -80,7 +80,7 @@ MIT — see [LICENSE](LICENSE).
 
 ## Author
 
-Alexandre Albert Ndour
+Abdoullah Ndao
 
 ## Support
 

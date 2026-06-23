@@ -3,12 +3,12 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lexworkseverywhere"
+name = "itworksonyourmachinetoo"
 version = "2.1.0"
 authors = [
-    {name = "Alexandre Albert Ndour", email = "alexandre.albert.ndour@example.com"},
+    {name = "Abdoullah Ndao", email = "abdoullahaljersi@gmail.com"},
 ]
-description = "LexWorksEverywhere: Le gestionnaire d'environnement qui garantit que votre code fonctionne partout."
+description = "ItWorksOnYourMachineToo: Cross-platform development environment manager that ensures code works everywhere."
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
@@ -32,18 +32,18 @@ dependencies = [
 ]
 
 [project.scripts]
-lexworks = "lexworkseverywhere.cli.main:main"
-lex = "lexworkseverywhere.cli.main:main"
+itworks = "ItWorksOnYourMachineToo.cli.main:main"
+iwym = "ItWorksOnYourMachineToo.cli.main:main"
 
 [project.urls]
-Homepage = "https://github.com/alexandrealbertndour/lexworkseverywhere"
-Repository = "https://github.com/alexandrealbertndour/lexworkseverywhere"
-"Bug Reports" = "https://github.com/alexandrealbertndour/lexworkseverywhere/issues"
-"Source" = "https://github.com/alexandrealbertndour/lexworkseverywhere"
+Homepage = "https://github.com/utachicodes/ItWorksOnYourMachineToo"
+Repository = "https://github.com/utachicodes/ItWorksOnYourMachineToo"
+"Bug Reports" = "https://github.com/utachicodes/ItWorksOnYourMachineToo/issues"
+"Source" = "https://github.com/utachicodes/ItWorksOnYourMachineToo"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["lexworkseverywhere*"]
+include = ["ItWorksOnYourMachineToo*"]
 
 [tool.setuptools.package-data]
-lexworkseverywhere = ["**/*.json", "**/*.yaml", "**/*.yml", "**/*.txt", "**/*.md"]
+ItWorksOnYourMachineToo = ["**/*.json", "**/*.yaml", "**/*.yml", "**/*.txt", "**/*.md"]

@@ -1,29 +1,28 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-LexWorksEverywhere - Cross-Platform Development Environment Manager
+ItWorksOnYourMachineToo - Cross-Platform Development Environment Manager
 Setup Script for Deployment
 """
 
 from setuptools import setup, find_packages
 import pathlib
 
-# Read the long description from README
 here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
-    name="lexworkseverywhere",
+    name="itworksonyourmachinetoo",
     version="2.1.0",
-    author="Alexandre Albert Ndour",
-    author_email="alexandre.albert.ndour@example.com",
-    description="LexWorksEverywhere: Cross-platform development environment manager that ensures code works everywhere without manual configuration.",
+    author="Abdoullah Ndao",
+    author_email="abdoullahaljersi@gmail.com",
+    description="ItWorksOnYourMachineToo: Cross-platform development environment manager that ensures code works everywhere without manual configuration.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/alexandrealbertndour/lexworkseverywhere",
+    url="https://github.com/utachicodes/ItWorksOnYourMachineToo",
     project_urls={
-        "Bug Reports": "https://github.com/alexandrealbertndour/lexworkseverywhere/issues",
-        "Source": "https://github.com/alexandrealbertndour/lexworkseverywhere",
+        "Bug Reports": "https://github.com/utachicodes/ItWorksOnYourMachineToo/issues",
+        "Source": "https://github.com/utachicodes/ItWorksOnYourMachineToo",
     },
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -48,8 +47,8 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "lexworks=lexworkseverywhere.cli.main:main",
-            "lex=lexworkseverywhere.cli.main:main",
+            "itworks=ItWorksOnYourMachineToo.cli.main:main",
+            "iwym=ItWorksOnYourMachineToo.cli.main:main",
         ],
     },
     keywords="development, environment, cross-platform, deployment, tool",
