@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import pytest
 from unittest.mock import MagicMock
-from lexworkseverywhere.core.engine.engine import ExecutionEngine
-from lexworkseverywhere.core.contracts.adapter import OSAdapter
+from ItWorksOnYourMachineToo.core.engine.engine import ExecutionEngine
+from ItWorksOnYourMachineToo.core.contracts.adapter import OSAdapter
 
 def test_engine_executes_via_adapter():
     mock_adapter = MagicMock(spec=OSAdapter)

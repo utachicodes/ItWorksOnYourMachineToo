@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
-from lexworkseverywhere.adapters.macos.macos_adapter import MacOSAdapter
-from lexworkseverywhere.adapters.linux.linux_adapter import LinuxAdapter
-from lexworkseverywhere.adapters.windows.windows_adapter import WindowsAdapter
+from ItWorksOnYourMachineToo.adapters.macos.macos_adapter import MacOSAdapter
+from ItWorksOnYourMachineToo.adapters.linux.linux_adapter import LinuxAdapter
+from ItWorksOnYourMachineToo.adapters.windows.windows_adapter import WindowsAdapter
 
 class TestOSCompliance(unittest.TestCase):
     def setUp(self):

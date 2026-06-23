@@ -3,8 +3,8 @@ import random
 import string
 import os
 from unittest.mock import MagicMock
-from lexworkseverywhere.core.planner.engine import ProjectPlanner
-from lexworkseverywhere.core.contracts.adapter import OSAdapter
+from ItWorksOnYourMachineToo.core.planner.engine import ProjectPlanner
+from ItWorksOnYourMachineToo.core.contracts.adapter import OSAdapter
 
 def generate_random_string(length=10):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))

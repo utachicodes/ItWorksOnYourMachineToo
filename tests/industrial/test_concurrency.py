@@ -2,9 +2,9 @@
 import threading
 import time
 from unittest.mock import MagicMock
-from lexworkseverywhere.core.planner.engine import ProjectPlanner
-from lexworkseverywhere.core.engine.engine import ExecutionEngine
-from lexworkseverywhere.core.contracts.adapter import OSAdapter
+from ItWorksOnYourMachineToo.core.planner.engine import ProjectPlanner
+from ItWorksOnYourMachineToo.core.engine.engine import ExecutionEngine
+from ItWorksOnYourMachineToo.core.contracts.adapter import OSAdapter
 
 def stress_test_task(planner, engine, project_id):
     path = f"/projects/proj_{project_id}"

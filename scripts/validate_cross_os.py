@@ -6,13 +6,13 @@ LexWorksEverywhere Cross-OS Validation Utility - Validation multi-plateforme
 Ce script vérifie que le 'Core' produit des résultats identiques peu importe
 l'adaptateur OS utilisé (mocké).
 
-Projet développé par : Alexandre Albert Ndour
+Projet développé par : Abdoullah Ndao
 """
 
 import sys
 from unittest.mock import MagicMock
-from lexworkseverywhere.core.planner.engine import ProjectPlanner
-from lexworkseverywhere.core.contracts.adapter import OSAdapter
+from ItWorksOnYourMachineToo.core.planner.engine import ProjectPlanner
+from ItWorksOnYourMachineToo.core.contracts.adapter import OSAdapter
 
 def run_validation():
     print("🚀 Démarrage de la validation Cross-OS...")

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import pytest
 from unittest.mock import MagicMock
-from lexworkseverywhere.core.validator.engine import EnvironmentValidator
-from lexworkseverywhere.core.contracts.adapter import OSAdapter
+from ItWorksOnYourMachineToo.core.validator.engine import EnvironmentValidator
+from ItWorksOnYourMachineToo.core.contracts.adapter import OSAdapter
 
 def test_validator_detects_missing_runtime():
     mock_adapter = MagicMock(spec=OSAdapter)

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import random
 import string
-from lexworkseverywhere.adapters.macos.macos_adapter import MacOSAdapter
-from lexworkseverywhere.adapters.windows.windows_adapter import WindowsAdapter
-from lexworkseverywhere.adapters.linux.linux_adapter import LinuxAdapter
+from ItWorksOnYourMachineToo.adapters.macos.macos_adapter import MacOSAdapter
+from ItWorksOnYourMachineToo.adapters.windows.windows_adapter import WindowsAdapter
+from ItWorksOnYourMachineToo.adapters.linux.linux_adapter import LinuxAdapter
 
 def generate_random_path(length=5, separator="/"):
     parts = [''.join(random.choices(string.ascii_letters, k=5)) for _ in range(length)]

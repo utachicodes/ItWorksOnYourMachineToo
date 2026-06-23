@@ -5,7 +5,7 @@ LexWorksEverywhere Distribution Verifier - Vérification de la distribution
 
 Simule une installation propre et vérifie que les points d'entrée CLI sont fonctionnels.
 
-Projet développé par : Alexandre Albert Ndour
+Projet développé par : Abdoullah Ndao
 """
 
 import subprocess
@@ -34,12 +34,12 @@ def run_dist_check():
             sys.exit(1)
         
         # 3. Test de la commande CLI
-        print("🧪 Test de la commande 'lexworkseverywhere doctor'...")
-        lexworkseverywhere_cmd = os.path.join(tmpdir, "venv", "bin", "lexworkseverywhere") if os.name != "nt" else os.path.join(tmpdir, "venv", "Scripts", "lexworkseverywhere")
+        print("🧪 Test de la commande 'itworks doctor'...")
+        itworks_cmd = os.path.join(tmpdir, "venv", "bin", "itworks") if os.name != "nt" else os.path.join(tmpdir, "venv", "Scripts", "itworks")
         
-        result = subprocess.run([lexworkseverywhere_cmd, "doctor"], capture_output=True, text=True)
+        result = subprocess.run([itworks_cmd, "doctor"], capture_output=True, text=True)
         
-        if "LexWorksEverywhere Doctor" in result.stdout:
+        if "ItWorksOnYourMachineToo" in result.stdout:
             print("✅ Succès : La CLI est correctement installée et accessible.")
         else:
             print(f"❌ Échec : La CLI n'a pas répondu comme attendu.\nStdout: {result.stdout}\nStderr: {result.stderr}")

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import time
 from unittest.mock import MagicMock
-from lexworkseverywhere.core.planner.engine import ProjectPlanner
-from lexworkseverywhere.core.contracts.adapter import OSAdapter
+from ItWorksOnYourMachineToo.core.planner.engine import ProjectPlanner
+from ItWorksOnYourMachineToo.core.contracts.adapter import OSAdapter
 
 def run_benchmark():
     print("🚀 Démarrage du Benchmark : ProjectPlanner Caching...")

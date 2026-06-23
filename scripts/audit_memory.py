@@ -2,8 +2,8 @@
 import os
 import psutil
 from unittest.mock import MagicMock
-from lexworkseverywhere.core.planner.engine import ProjectPlanner
-from lexworkseverywhere.core.contracts.adapter import OSAdapter
+from ItWorksOnYourMachineToo.core.planner.engine import ProjectPlanner
+from ItWorksOnYourMachineToo.core.contracts.adapter import OSAdapter
 
 def run_memory_audit(iterations=1000):
     print(f"🧠 Démarrage de l'Audit Mémoire ({iterations} itérations)...")
