@@ -38,6 +38,7 @@ htmlcov/
 .zeroenv.json
 *.tar.gz
 *.zip
+coverage.xml
 
 # Test data
 tests/industrial/data/

@@ -11,7 +11,8 @@ authors = [
 description = "ItWorksOnYourMachineToo: Cross-platform development environment manager that ensures code works everywhere."
 readme = "README.md"
 license = {text = "MIT"}
-requires-python = ">=3.9"
+requires-python = ">=3.10"
+keywords = ["development", "environment", "cross-platform", "deployment", "devcontainer", "cli"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -39,7 +40,6 @@ iwym = "ItWorksOnYourMachineToo.cli.main:main"
 Homepage = "https://github.com/utachicodes/ItWorksOnYourMachineToo"
 Repository = "https://github.com/utachicodes/ItWorksOnYourMachineToo"
 "Bug Reports" = "https://github.com/utachicodes/ItWorksOnYourMachineToo/issues"
-"Source" = "https://github.com/utachicodes/ItWorksOnYourMachineToo"
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -47,3 +47,6 @@ include = ["ItWorksOnYourMachineToo*"]
 
 [tool.setuptools.package-data]
 ItWorksOnYourMachineToo = ["**/*.json", "**/*.yaml", "**/*.yml", "**/*.txt", "**/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
