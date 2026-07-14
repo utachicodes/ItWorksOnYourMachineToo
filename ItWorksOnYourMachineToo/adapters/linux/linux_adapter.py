@@ -10,6 +10,7 @@ from ...core.contracts.adapter import (
     SandboxInterface,
     IntegrityInterface,
 )
+from ...core.i18n import t
 
 
 class LinuxFileSystem(FileSystemInterface):
@@ -50,7 +51,7 @@ class LinuxProcessRunner(ProcessRunnerInterface):
         return subprocess.run(cmd, cwd=cwd, env=env, timeout=timeout, capture_output=capture_output, text=True)
 
     def has_binary(self, name: str) -> bool:
-        """Vérifie si un binaire est disponible dans le PATH sur Linux."""
+        """Checks whether a binary is available on the PATH on Linux."""
         import subprocess
         try:
             return subprocess.run(["which", name], capture_output=True).returncode == 0
@@ -71,7 +72,7 @@ class LinuxIntegrity(IntegrityInterface):
             return ""
 
     def verify_signature(self, binary_path: str) -> bool:
-        # Placeholder pour GPG ou l'intégrité debian
+        # Placeholder for GPG or Debian package integrity checks
         return True
 
 
@@ -136,4 +137,4 @@ class LinuxAdapter(OSAdapter):
             "ansible-playbook": "sudo apt install ansible"
         }
         cmd = mapping.get(binary_name, f"sudo apt install {binary_name}")
-        return f"Veuillez exécuter : [bold cyan]{cmd}[/bold cyan]"
+        return f"{t('please_run')} [bold cyan]{cmd}[/bold cyan]"
