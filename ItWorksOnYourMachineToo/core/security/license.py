@@ -4,7 +4,7 @@ import os
 
 class LicenseManager:
     """
-    Gère la vérification de l'intégrité de la licence et de la paternité.
+    Handles license integrity and authorship verification.
     """
     AUTHOR = "Abdoullah Ndao"
 
