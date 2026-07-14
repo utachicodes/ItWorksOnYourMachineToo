@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-ItWorksOnYourMachineToo Doctor - Outil d'auto-diagnostic
+ItWorksOnYourMachineToo Doctor - Self-diagnostic tool
 ======================================
 
-Vérifie que l'environnement hôte est prêt pour ItWorksOnYourMachineToo.
-
-Projet développé par : Abdoullah Ndao
+Checks that the host environment is ready for ItWorksOnYourMachineToo.
 """
 
 import sys
