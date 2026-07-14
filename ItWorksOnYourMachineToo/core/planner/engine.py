@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-ItWorksOnYourMachineToo Project Planner - Moteur de planification
-==============================================
+ItWorksOnYourMachineToo Project Planner
+========================================
 
-Ce module analyse un projet logiciel en utilisant l'adaptateur OS injecté.
-Il est totalement agnostique vis-à-vis du système d'exploitation.
-
-Projet développé par : Abdoullah Ndao
+Analyses a software project using the injected OS adapter. Fully
+agnostic of the underlying operating system.
 """
 
 from typing import Dict, Any
@@ -65,7 +63,7 @@ class ProjectPlanner:
         self._cache = {}  # Simple memory cache
 
     def _calculate_project_hash(self, project_path: str) -> str:
-        """Calcule un hash basé sur les fichiers clés du projet pour l'invalidation du cache."""
+        """Compute a hash of the project's key files, used for cache invalidation."""
         import hashlib
 
         key_files = ["requirements.txt", "package.json", "go.mod", "pyproject.toml", "composer.json", "Cargo.toml"]
@@ -110,7 +108,7 @@ class ProjectPlanner:
         return plan
 
     def _detect_project_type(self, project_path: str) -> str:
-        """Détecte le type de projet via l'interface FS (récursif limité + pondération)."""
+        """Detects the project type via the FS interface (bounded recursion + weighting)."""
         check_dirs = ["", "src", "app", "backend", "frontend", "server", "packages", "services"]
         ignore_dirs = {".git", "node_modules", "dist", "build", "target", "venv", ".venv", "__pycache__"}
 
@@ -204,7 +202,7 @@ class ProjectPlanner:
         return best_type
 
     def _apply_heuristics(self, project_path: str) -> str:
-        """Applique des heuristiques pour deviner le type de projet si inconnu."""
+        """Applies heuristics to guess the project type when detection is unknown."""
         entry_candidates = ["main.py", "index.js", "app.py", "script.sh"]
         for cand in entry_candidates:
             p = f"{project_path}/{cand}"
@@ -234,7 +232,7 @@ class ProjectPlanner:
         return "unknown"
 
     def _extract_requirements(self, project_path: str, project_type: str) -> Dict[str, Any]:
-        """Extrait les besoins du projet sans accès système direct."""
+        """Extracts project requirements without direct system access."""
         requirements = {"runtime": project_type, "packages": [], "engines": {}}
 
         # Specialized runtimes
