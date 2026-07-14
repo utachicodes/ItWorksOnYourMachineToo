@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-ItWorksOnYourMachineToo Adapter Factory - Usine d'adaptateurs
+ItWorksOnYourMachineToo Adapter Factory
 ==========================================
 
-Détecte le système actuel et retourne l'adaptateur approprié.
-
-Projet développé par : Abdoullah Ndao
+Detects the current platform and returns the appropriate adapter.
 """
 
 import platform
