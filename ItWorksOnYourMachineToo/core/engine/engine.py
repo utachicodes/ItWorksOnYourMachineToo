@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-ItWorksOnYourMachineToo Execution Engine - Moteur d'exécution
+ItWorksOnYourMachineToo Execution Engine
 ==========================================
 
-Ce module gère l'orchestration de l'exécution en utilisant l'adaptateur OS.
-Il n'a aucune dépendance directe vers 'os', 'sys' ou 'subprocess'.
-
-Projet développé par : Abdoullah Ndao
+Orchestrates project execution using the OS adapter. Has no direct
+dependency on 'os', 'sys', or 'subprocess'.
 """
 
 from typing import Dict, List, Any
 from ..contracts.adapter import OSAdapter
+from ..i18n import t
 
 
 class ExecutionEngine:
@@ -23,7 +22,7 @@ class ExecutionEngine:
         self.environment_stack = []
 
     def check_system_requirements(self, project_type: str) -> bool:
-        """Vérifie que les outils système nécessaires sont installés."""
+        """Checks that the system tools required by the project type are installed."""
         req_map = {
             "python": ["python3", "pip"],
             "nodejs": ["node", "npm"],
@@ -67,10 +66,10 @@ class ExecutionEngine:
                 console = Console()
                 console.print(
                     Panel(
-                        "[bold red]ERREUR :[/bold red] "
-                        f"L'outil '[bold]{binary}[/bold]' est manquant pour ce projet.\n\n"
+                        f"[bold red]{t('error')}:[/bold red] "
+                        f"{t('missing_tool').format(binary=binary)}\n\n"
                         f"{suggestion}",
-                        title="Résolution d'Environnement",
+                        title=t("environment_resolution"),
                         border_style="red",
                     )
                 )
@@ -78,22 +77,21 @@ class ExecutionEngine:
         return True
 
     def prepare(self, plan: Dict[str, Any]) -> bool:
-        """Prépare l'environnement via l'adaptateur."""
+        """Prepares the environment via the adapter."""
         try:
             project_type = plan.get("project_type")
             p_path = plan.get("project_path")
 
-            # 0. Vérification proactive des outils système
+            # 0. Proactive check of required system tools
             runtime = plan.get("requirements", {}).get("runtime", project_type)
 
             if not self.check_system_requirements(runtime):
                 return False
 
-            # Capture de l'état actuel (via l'adapter si nécessaire, ou géré ici)
-            # Pour simplifier, on stocke les env vars actuelles
-            self.environment_stack.append({"env": {}})  # Placeholder
+            # Capture current state (placeholder for future env var restore support)
+            self.environment_stack.append({"env": {}})
 
-            # Installation des dépendances via l'interface process de l'adapter
+            # Install dependencies via the adapter's process interface
             project_type = plan.get("project_type")
             p_path = plan.get("project_path")
 
@@ -139,7 +137,7 @@ class ExecutionEngine:
             return False
 
     def execute(self, plan: Dict[str, Any], args: List[str] = None) -> Dict[str, Any]:
-        """Exécute le projet dans le bac à sable de l'adaptateur."""
+        """Executes the project inside the adapter's sandbox."""
         import time
 
         if args is None:
@@ -158,7 +156,7 @@ class ExecutionEngine:
         elif plan.get("project_type") in ["shell", "generic-make"]:
             policy = "strict"  # Scripts are high risk
 
-        # Entrée dans le sandbox avec politique calculée
+        # Enter the sandbox with the computed policy
         self.adapter.sandbox.enter(policy, {"path": plan.get("project_path")})
 
         try:
@@ -213,7 +211,7 @@ class ExecutionEngine:
             return ["python3", entry] + args
 
         if p_type == "nodejs":
-            # server.js est très commun pour les apps backend
+            # server.js is very common for backend apps
             entry = "server.js"
             if not self.adapter.fs.exists(f"{p_path}/{entry}"):
                 entry = "index.js"
@@ -251,6 +249,6 @@ class ExecutionEngine:
         return ["echo", f"Project type '{p_type}' detected but no default run command defined."] + args
 
     def rollback(self):
-        """Restaure l'état via l'adaptateur."""
+        """Restores prior state via the adapter."""
         if self.environment_stack:
             self.environment_stack.pop()

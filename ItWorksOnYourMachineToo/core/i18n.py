@@ -28,6 +28,8 @@ MESSAGES = {
         "warn": "Warning",
         "error": "Error",
         "lang_set": "Language set to",
+        "missing_tool": "Tool '{binary}' is missing for this project.",
+        "environment_resolution": "Environment Resolution",
     },
     "fr": {
         "app_title": "ItWorksOnYourMachineToo : Gestionnaire d'environnement universel (v2 Core PUR).",
@@ -56,6 +58,8 @@ MESSAGES = {
         "warn": "Avertissement",
         "error": "Erreur",
         "lang_set": "Langue définie sur",
+        "missing_tool": "L'outil '{binary}' est manquant pour ce projet.",
+        "environment_resolution": "Résolution d'Environnement",
     },
 }
 
