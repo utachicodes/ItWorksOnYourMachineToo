@@ -36,7 +36,7 @@ def run_doctor(project_path: str = None, apply: bool = False, json_output: bool 
         table.add_column(t("details"), style="green")
 
     py_version = platform.python_version()
-    is_py_ok = sys.version_info >= (3, 9)
+    is_py_ok = sys.version_info >= (3, 10)
     if not json_output:
         table.add_row(t("python_version"), "✅ " + t("ok") if is_py_ok else "❌ " + t("error"), py_version)
 
