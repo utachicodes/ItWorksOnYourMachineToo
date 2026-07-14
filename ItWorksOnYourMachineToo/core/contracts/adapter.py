@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-ItWorksOnYourMachineToo OS Adapter Interface - Contrat d'interface pour les adaptateurs OS
+ItWorksOnYourMachineToo OS Adapter Interface
 ========================================================================
 
-Ce module définit les contrats d'interface que chaque adaptateur OS doit implémenter.
-Cela permet au 'Core' de ItWorksOnYourMachineToo de rester totalement agnostique vis-à-vis du système.
-
-Projet développé par : Abdoullah Ndao
+Defines the interface contracts each OS adapter must implement, so that
+the ItWorksOnYourMachineToo Core stays fully agnostic of the underlying
+operating system.
 """
 
 from abc import ABC, abstractmethod
@@ -15,7 +14,7 @@ import subprocess
 
 
 class FileSystemInterface(ABC):
-    """Contrat pour les opérations sur le système de fichiers."""
+    """Contract for filesystem operations."""
 
     @abstractmethod
     def exists(self, path: str) -> bool:
@@ -39,17 +38,17 @@ class FileSystemInterface(ABC):
 
     @abstractmethod
     def list_dir(self, path: str) -> List[str]:
-        """Liste les fichiers et dossiers dans un répertoire."""
+        """Lists the files and directories in a directory."""
         pass
 
     @abstractmethod
     def resolve_path(self, path: str) -> str:
-        """Résout un chemin absolu et gère les symlinks."""
+        """Resolves an absolute path and follows symlinks."""
         pass
 
 
 class ProcessRunnerInterface(ABC):
-    """Contrat pour l'exécution de processus."""
+    """Contract for process execution."""
 
     @abstractmethod
     def run(
@@ -65,34 +64,34 @@ class ProcessRunnerInterface(ABC):
 
     @abstractmethod
     def has_binary(self, name: str) -> bool:
-        """Vérifie si un binaire est disponible dans le PATH."""
+        """Checks whether a binary is available on the PATH."""
         pass
 
 
 class IntegrityInterface(ABC):
-    """Contrat pour la vérification d'intégrité des binaires."""
+    """Contract for binary integrity verification."""
 
     @abstractmethod
     def get_binary_hash(self, binary_path: str) -> str:
-        """Calcule le hash SHA256 d'un exécutable."""
+        """Computes the SHA256 hash of an executable."""
         pass
 
     @abstractmethod
     def verify_signature(self, binary_path: str) -> bool:
-        """Vérifie la signature cryptographique (si applicable)."""
+        """Verifies the cryptographic signature (if applicable)."""
         pass
 
 
 class SandboxInterface(ABC):
-    """Contrat pour l'isolation et le sandboxing."""
+    """Contract for sandboxing and isolation."""
 
     @abstractmethod
     def enter(self, policy: str, context: Dict[str, Any]) -> bool:
         """
-        Entre dans un sandbox avec une politique spécifique :
-        - 'strict' : Lecture seule, pas de réseau.
-        - 'limited' : Ecriture projet uniquement, réseau restreint.
-        - 'default' : Politique standard ItWorksOnYourMachineToo.
+        Enters a sandbox with a specific policy:
+        - 'strict': Read-only, no network.
+        - 'limited': Project write access only, restricted network.
+        - 'default': Standard ItWorksOnYourMachineToo policy.
         """
         pass
 
@@ -102,7 +101,7 @@ class SandboxInterface(ABC):
 
 
 class OSAdapter(ABC):
-    """Interface globale de l'adaptateur OS."""
+    """Global OS adapter interface."""
 
     __author__ = "Abdoullah Ndao"
 
@@ -132,12 +131,12 @@ class OSAdapter(ABC):
 
     @abstractmethod
     def get_os_name(self) -> str:
-        """Retourne le nom de l'OS (macos, linux, windows)."""
+        """Returns the OS name (macos, linux, windows)."""
         pass
 
     @abstractmethod
     def get_install_suggestion(self, binary_name: str) -> str:
-        """Retourne une suggestion de commande pour installer un binaire manquant."""
+        """Returns a suggested command to install a missing binary."""
         pass
 
     @abstractmethod
