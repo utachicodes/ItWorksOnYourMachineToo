@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-ItWorksOnYourMachineToo Environment Profiler - Profileur d'environnement
+ItWorksOnYourMachineToo Environment Profiler
 ==================================================
 
-Ce module capture des informations sur l'environnement via l'adaptateur OS.
-Il prépare un profil portable (JSON) du système.
-
-Projet développé par : Abdoullah Ndao
+Captures environment information via the OS adapter and prepares a
+portable (JSON) profile of the system.
 """
 
 from typing import Dict, Any
@@ -25,7 +23,7 @@ class EnvironmentProfiler:
 
     def capture_profile(self) -> Dict[str, Any]:
         """
-        Capture un profil complet via l'adaptateur.
+        Captures a complete profile via the adapter.
         """
         env_vars = self._get_safe_env_vars()
         runtimes = self._detect_runtimes()
