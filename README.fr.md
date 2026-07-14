@@ -52,8 +52,10 @@ itworks run -p /path/to/project
 
 1. Core PUR : Project Planner, Execution Engine, Environment Validator  
 2. Adapters OS : macOS, Windows, Linux  
-3. Security Layer
-4. CI/CD multi-OS
+3. Exporters : un module par cible d'export (devcontainer, brewfile, winget,
+   apt, nix, ansible, docker-compose), dispatchés via un registre
+4. Security Layer
+5. CI/CD multi-OS
 
 ## Tests
 
