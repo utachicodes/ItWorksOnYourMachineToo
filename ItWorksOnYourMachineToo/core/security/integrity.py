@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-ItWorksOnYourMachineToo Runtime Integrity - Vérification de l'intégrité des runtimes
+ItWorksOnYourMachineToo Runtime Integrity
 ================================================================
 
-Ce module définit les empreintes numériques connues pour les outils standards
-et permet de vérifier si un binaire a été altéré.
-
-Projet développé par : Abdoullah Ndao
+Defines known-good fingerprints for standard tools and checks whether a
+binary has been tampered with.
 """
 
 from typing import Dict
 import os
 from ..contracts.adapter import OSAdapter
 
-# Base de données simplifiée pour l'exemple (en production, chargée via un service sécurisé)
+# Simplified example database (in production, loaded from a secured service)
 KNOWN_GOOD_HASHES = {
     "macos": {
         "python3.12": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",  # Placeholder
@@ -33,21 +31,20 @@ class IntegrityManager:
         self.os_name = adapter.get_os_name()
 
     def is_binary_safe(self, binary_path: str, expected_version: str) -> bool:
-        """Vérifie si le binaire correspond à une empreinte connue."""
+        """Checks whether the binary matches a known fingerprint."""
         current_hash = self.adapter.integrity.get_binary_hash(binary_path)
 
-        # En mode strict, on compare avec la DB
+        # In strict mode, compare against the known-good database
         lookup_key = f"{expected_version}"
         target_hashes = KNOWN_GOOD_HASHES.get(self.os_name, {})
 
         if lookup_key in target_hashes:
             return current_hash == target_hashes[lookup_key]
 
-        # Si inconnu, on peut choisir d'autoriser avec un warning ou bloquer selon mode strict
+        # If unknown, allow with an implicit warning unless strict mode is set
         strict = os.getenv("IWYM_STRICT_INTEGRITY", "").lower() in ("1", "true", "yes", "strict")
         return not strict
 
     def verify_project_tools(self, project_plan: Dict) -> bool:
-        """Vérifie tous les outils prévus dans le plan."""
-        # Logique de parcours du plan
+        """Verifies all the tools planned for the project."""
         return True
