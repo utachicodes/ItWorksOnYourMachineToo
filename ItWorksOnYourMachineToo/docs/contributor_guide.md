@@ -130,7 +130,7 @@ python -m pytest tests/ --cov=itworksonyourmachinetoo --cov-report=html
 
 ### OS Adapters Module
 
-- Implement the `BaseAdapter` interface
+- Implement the `OSAdapter` interface (`core/contracts/adapter.py`)
 - Handle path conversions between OS formats
 - Convert scripts between shell types
 - Map package manager commands appropriately
