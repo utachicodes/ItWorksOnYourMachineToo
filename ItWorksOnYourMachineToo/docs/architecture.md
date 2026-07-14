@@ -38,13 +38,13 @@ The Environment Profiler captures system-specific information including:
 - Network configuration
 - File system characteristics
 
-This information is saved in `.itworkseverywhere.json` files for environment reproduction.
+This information is saved in `.itworksonyourmachinetoo.json` files for environment reproduction.
 
 ### OS Adapters
 
 The OS Adapter module is the core of ItWorksOnYourMachineToo's cross-platform capability. It includes:
 
-- **BaseAdapter**: Abstract interface for all OS adapters
+- **OSAdapter**: Abstract interface for all OS adapters (`core/contracts/adapter.py`)
 - **WindowsAdapter**: Windows-specific path, command, and environment handling
 - **MacOSAdapter**: macOS-specific path, command, and environment handling
 - **LinuxAdapter**: Linux-specific path, command, and environment handling
@@ -75,15 +75,26 @@ The Diagnostic Engine analyzes execution errors and provides:
 - Automatic fix application
 - Re-testing after fixes
 
+### Exporters
+
+The `exporters` package generates environment artifacts for a detected
+project, one module per target: `devcontainer`, `brewfile`, `winget`,
+`apt`, `nix`, `ansible`, and `docker-compose`. The `export` CLI command
+dispatches to the right module through a small registry
+(`exporters.EXPORTERS`), so adding a new export target only requires a
+new module and a registry entry.
+
 ### CLI Interface
 
 The CLI provides the user-facing commands:
 
-- `itworkseverywhere scan` - Analyze project structure
-- `itworkseverywhere capture` - Profile current environment
-- `itworkseverywhere run` - Execute project in managed environment
-- `itworkseverywhere diagnose` - Analyze and fix environment issues
-- `itworkseverywhere test` - Validate environment compatibility
+- `itworks scan` - Analyze project structure and produce an execution plan
+- `itworks capture` - Profile the current environment
+- `itworks run` - Execute a project in a managed environment
+- `itworks doctor` - Analyze and fix environment issues
+- `itworks export` - Generate DevContainer/Brewfile/winget/apt/nix/Ansible/docker-compose artifacts
+- `itworks init` - Generate a `.itworks.toml` project config
+- `itworks list` - List detected languages and their install status
 
 ## Data Flow
 
