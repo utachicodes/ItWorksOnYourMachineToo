@@ -10,6 +10,7 @@ from ...core.contracts.adapter import (
     SandboxInterface,
     IntegrityInterface,
 )
+from ...core.i18n import t
 
 
 class MacOSFileSystem(FileSystemInterface):
@@ -47,11 +48,11 @@ class MacOSProcessRunner(ProcessRunnerInterface):
         capture_output: bool = True,
         policy: Optional[str] = "default",
     ) -> subprocess.CompletedProcess:
-        # En production, 'policy' adapterait l'exécution (ex: sandbox-exec)
+        # In production, 'policy' would shape execution (e.g. sandbox-exec)
         return subprocess.run(cmd, cwd=cwd, env=env, timeout=timeout, capture_output=capture_output, text=True)
 
     def has_binary(self, name: str) -> bool:
-        """Vérifie si un binaire est disponible dans le PATH sur macOS."""
+        """Checks whether a binary is available on the PATH on macOS."""
         import subprocess
         try:
             return subprocess.run(["which", name], capture_output=True).returncode == 0
@@ -151,4 +152,4 @@ class MacOSAdapter(OSAdapter):
             "ansible-playbook": "brew install ansible"
         }
         cmd = mapping.get(binary_name, f"brew install {binary_name}")
-        return f"Veuillez exécuter : [bold cyan]{cmd}[/bold cyan]"
+        return f"{t('please_run')} [bold cyan]{cmd}[/bold cyan]"
