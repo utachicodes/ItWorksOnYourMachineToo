@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-ItWorksOnYourMachineToo Environment Validator - Moteur de validation/diagnostic
-=============================================================
+ItWorksOnYourMachineToo Environment Validator
+=================================================
 
-Ce module analyse les échecs via l'adaptateur OS injecté.
-Il propose des corrections basées sur des contrats d'exécution.
-
-Projet développé par : Abdoullah Ndao
+Analyses execution failures via the injected OS adapter and proposes
+fixes based on execution contracts.
 """
 
 import re
@@ -112,7 +110,7 @@ class EnvironmentValidator:
         ]
 
     def validate_failure(self, stderr: str) -> Dict[str, Any]:
-        """Analyse le stderr pour identifier le type d'échec."""
+        """Analyses stderr output to identify the type of failure."""
         results = {"detected_issues": [], "is_fixable": False}
 
         for p in self.common_patterns:
@@ -128,9 +126,9 @@ class EnvironmentValidator:
         return results
 
     def propose_fix(self, issue: Dict[str, Any]) -> Optional[List[str]]:
-        """Propose une commande de correction basée sur l'OS actuel."""
+        """Proposes a fix command based on the current OS."""
         if issue["category"] == "missing_python_package":
-            # Extraire le nom du package du contexte si possible
+            # Extract the package name from the context if possible
             match = re.search(r"module named '(.+)'", issue.get("context", ""))
             pkg_name = match.group(1) if match else "module_name"
             return ["pip", "install", pkg_name]
