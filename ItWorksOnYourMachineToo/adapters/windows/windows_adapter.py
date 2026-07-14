@@ -10,6 +10,7 @@ from ...core.contracts.adapter import (
     SandboxInterface,
     IntegrityInterface,
 )
+from ...core.i18n import t
 
 
 class WindowsFileSystem(FileSystemInterface):
@@ -50,7 +51,7 @@ class WindowsProcessRunner(ProcessRunnerInterface):
         return subprocess.run(cmd, cwd=cwd, env=env, timeout=timeout, capture_output=capture_output, text=True)
 
     def has_binary(self, name: str) -> bool:
-        """Vérifie si un binaire est disponible sur Windows via 'where'."""
+        """Checks whether a binary is available on Windows via 'where'."""
         import subprocess
         try:
             return subprocess.run(["where", name], capture_output=True).returncode == 0
@@ -130,4 +131,4 @@ class WindowsAdapter(OSAdapter):
             "docker": "winget install Docker.DockerDesktop"
         }
         cmd = mapping.get(binary_name, f"winget install {binary_name}")
-        return f"Veuillez exécuter : [bold cyan]{cmd}[/bold cyan]"
+        return f"{t('please_run')} [bold cyan]{cmd}[/bold cyan]"
