@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-ItWorksOnYourMachineToo - Outil d'environnement de développement multiplateforme
+ItWorksOnYourMachineToo - Cross-platform development environment tool
 ===============================================================
 
-Ce projet est conçu pour permettre l'exécution de projets logiciels
-sur n'importe quel système d'exploitation sans configuration manuelle.
+This project lets software projects run on any operating system
+without manual configuration.
 """
 
 __author__ = "Abdoullah Ndao"
